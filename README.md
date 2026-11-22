@@ -15,7 +15,7 @@ A one-page, phone-friendly snow outlook for Park City, Utah: **https://jelgie-st
 Run it locally:
 
 ```bash
-pip install requests numpy pandas pyshp shapely
+pip install -r requirements.txt
 python build.py .
 python -m http.server   # then open http://localhost:8000
 ```
