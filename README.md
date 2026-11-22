@@ -10,7 +10,7 @@ A one-page, phone-friendly snow outlook for Park City, Utah: **https://jelgie-st
 
 - `index.html`: the page (vanilla JS, no dependencies). It reads `data.json`.
 - `build.py`: pulls the data and writes `data.json`.
-- `.github/workflows/refresh.yml`: runs `build.py` twice a day and commits the new `data.json`. GitHub Pages serves the result.
+- `.github/workflows/refresh.yml`: runs `build.py` every 3 hours and commits the new `data.json`. GitHub Pages serves the result.
 
 Run it locally:
 
