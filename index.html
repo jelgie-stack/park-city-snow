@@ -88,7 +88,7 @@ h3.h3:first-child{margin-top:4px}
 .brk span{border-top:3px solid var(--accent);border-radius:2px;text-align:center;font-size:13px;font-weight:700;color:var(--accent-ink);white-space:nowrap;line-height:15px;overflow:visible}
 .keyrow{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;font-size:13px;color:var(--muted);margin-top:6px}
 .keyrow i{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-2px;margin-right:3px}
-.conf{display:flex;align-items:flex-start;gap:10px;margin-top:12px;padding-top:10px;border-top:1px solid var(--line)}
+.conf{display:flex;align-items:center;gap:10px;margin-top:12px;padding-top:10px;border-top:1px solid var(--line)}
 .pips{display:flex;gap:3px;flex:none;margin-top:4px}
 .pips i{width:14px;height:8px;border-radius:2px;background:var(--track)}
 .pips i.on{background:var(--text2)}
@@ -115,6 +115,12 @@ h3.h3:first-child{margin-top:4px}
 .acc-btn[aria-expanded="true"] .chev{transform:rotate(180deg)}
 .acc-body{padding:2px 14px 16px;border-top:1px solid var(--line)}
 .acc-body>:first-child{margin-top:12px}
+.acc-body:not(.xp-on) .xp{display:none}
+.xp-btn{display:inline-flex;align-items:center;gap:6px;min-height:44px;margin-top:6px;padding:0 4px;border:0;background:none;color:var(--accent-ink);font:inherit;font-size:14px;font-weight:600;cursor:pointer}
+.xp-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+.conf-why{display:none}.conf.open .conf-why{display:inline}
+.conf-tog{border:0;background:none;padding:0;font:inherit;color:inherit;cursor:pointer;text-align:left;min-height:44px;display:flex;align-items:center;gap:10px}
+.conf-tog .i{color:var(--accent-ink);font-weight:700}
 
 /* total odds */
 .odds{display:grid;gap:6px;margin:4px 0 6px}
@@ -328,15 +334,15 @@ h3.h3:first-child{margin-top:4px}
       <div class="gl">
         <p class="eyebrow"><span>Next 10 days</span><span id="gDates"></span></p>
         <h1 id="vh"></h1>
-        <p class="gsub" id="vSub"></p>
+        <p class="gsub" id="vSub" hidden></p>
         <div class="totals" id="totals" role="group" aria-label="Most likely 10-day snow totals"></div>
         <div class="conf" id="conf"></div>
-        <div class="upd" id="updated"></div>
+        <div class="upd" id="updated" hidden></div>
       </div>
       <div class="gr">
-        <div class="stripcap"><b id="stripTitle">Chance of 1″+ each day</b><span id="stripSite"></span></div>
+        <div class="stripcap"><b id="stripTitle">Chance of 1″+ · typical inches</b><span id="stripSite"></span></div>
         <div id="strip10" role="img"></div>
-        <div class="keyrow" aria-hidden="true">
+        <div class="keyrow" aria-hidden="true" hidden>
           <span><i style="background:var(--l1)"></i>15–34%</span><span><i style="background:var(--l2)"></i>35–59%</span><span><i style="background:var(--l3)"></i>60%+</span><span><b style="color:var(--text)">3.5</b> = typical inches</span>
         </div>
       </div>
@@ -344,7 +350,7 @@ h3.h3:first-child{margin-top:4px}
 
     <!-- SCAN: 10-day forecast group -->
     <div class="ghead">
-      <h2 id="g1">10-day forecast <small id="g1sub">Summit, 9,715 ft · follows the Summit/Town switch</small></h2>
+      <h2 id="g1">10-day forecast <small id="g1sub"></small></h2>
       <button type="button" class="linkbtn" id="toggleAll">Expand all</button>
     </div>
     <div class="stack two">
@@ -357,7 +363,7 @@ h3.h3:first-child{margin-top:4px}
         <div class="acc-body" id="b-days" hidden>
           <h3 class="h3" id="oddsTitle">Odds for the 10-day total</h3>
           <div class="odds" id="odds"></div>
-          <p class="note" id="oddsNote" style="margin:4px 0 0"></p>
+          <p class="note xp" id="oddsNote" style="margin:4px 0 0"></p>
           <h3 class="h3">Each day</h3>
           <div class="legend" aria-hidden="true">
             <span><i style="background:var(--p1)"></i>chance of 1″+</span>
@@ -369,7 +375,7 @@ h3.h3:first-child{margin-top:4px}
             <ul class="days" id="days"></ul>
           </div>
           <div class="dchart" id="dchart"><div class="dcols" id="dcols"></div></div>
-          <p class="note" id="dFoot"></p>
+          <p class="note xp" id="dFoot"></p>
         </div>
       </section>
 
@@ -380,10 +386,10 @@ h3.h3:first-child{margin-top:4px}
           <svg class="chev" viewBox="0 0 18 18" aria-hidden="true"><path d="M4 7l5 5 5-5"/></svg>
         </button></h2>
         <div class="acc-body" id="b-storm" hidden>
-          <p class="sub" id="sSub"></p>
+          <p class="sub xp" id="sSub"></p>
           <div id="stripBox"></div>
           <div class="legend" id="sLegend" style="margin-top:8px"></div>
-          <div id="sCallouts"></div>
+          <div id="sCallouts" class="xp"></div>
         </div>
       </section>
 
@@ -394,16 +400,16 @@ h3.h3:first-child{margin-top:4px}
           <svg class="chev" viewBox="0 0 18 18" aria-hidden="true"><path d="M4 7l5 5 5-5"/></svg>
         </button></h2>
         <div class="acc-body" id="b-models" hidden>
-          <p class="sub">10-day total from each forecast model, with its day-by-day shape underneath.</p>
+          <p class="sub xp">10-day total from each forecast model, with its day-by-day shape underneath.</p>
           <div id="models"></div>
-          <p class="note">In last season’s backtest, ECMWF, ECMWF AI and GFS ensemble were about equally accurate at 10 days out, so the headline numbers blend all four rather than trusting one.</p>
+          <p class="note xp">In last season’s backtest, ECMWF, ECMWF AI and GFS ensemble were about equally accurate at 10 days out, so the headline numbers blend all four rather than trusting one.</p>
         </div>
       </section>
     </div>
 
     <!-- SCAN: bigger picture group -->
     <div class="ghead">
-      <h2 id="g2">Bigger picture <small id="g2sub">Thaynes Canyon station, 9,260 ft · not affected by Summit/Town</small></h2>
+      <h2 id="g2">Big picture <small id="g2sub">Thaynes Canyon · same for Summit and Town</small></h2>
     </div>
     <div class="stack">
       <section class="card acc" id="sec-long">
@@ -413,14 +419,14 @@ h3.h3:first-child{margin-top:4px}
           <svg class="chev" viewBox="0 0 18 18" aria-hidden="true"><path d="M4 7l5 5 5-5"/></svg>
         </button></h2>
         <div class="acc-body" id="b-long" hidden>
-          <h3 class="h3">Chance each week is wetter than normal</h3>
+          <h3 class="h3">Chance of a wetter-than-normal week</h3>
           <div class="wkhead" aria-hidden="true"><span>Week</span><span>Water vs a normal week</span><span>Wetter</span></div>
           <div id="weeks"></div>
           <div class="wscale" aria-hidden="true" id="wscale"></div>
-          <p class="note" id="wkNote"></p>
+          <p class="note xp" id="wkNote"></p>
           <h3 class="h3">NOAA’s official outlooks</h3>
           <div id="cpc"></div>
-          <p class="note">From NOAA’s Climate Prediction Center: odds of a wetter, drier, warmer or colder period than normal, not amounts. “No tilt” means forecasters can’t call it, not that a normal period is coming.</p>
+          <p class="note xp">From NOAA’s Climate Prediction Center: odds of a wetter, drier, warmer or colder period than normal, not amounts. “No tilt” means forecasters can’t call it, not that a normal period is coming.</p>
         </div>
       </section>
 
@@ -443,37 +449,33 @@ h3.h3:first-child{margin-top:4px}
               <button type="button" data-v="full" aria-pressed="false">Full season</button>
             </div>
           </div>
-          <p class="chartttl" id="seChartTitle"></p>
+          <p class="chartttl xp" id="seChartTitle"></p>
           <div class="legend" aria-hidden="true">
             <span><span class="lg-line" style="border-color:var(--accent)"></span>This season</span>
-            <span><span class="lg-line" style="border-color:var(--accent);border-top-style:dotted"></span>Next 10 days (shaded: likely range)</span>
-            <span><span class="lg-line" style="border-color:var(--median);border-top-style:dashed"></span>Normal (1991–2020 median)</span>
-            <span><span class="lg-line" style="border-color:var(--violet)"></span>2022–23 (record year)</span>
+            <span><span class="lg-line" style="border-color:var(--accent);border-top-style:dotted"></span>Forecast</span>
+            <span><span class="lg-line" style="border-color:var(--median);border-top-style:dashed"></span>Normal</span>
+            <span><span class="lg-line" style="border-color:var(--violet)"></span>2022–23</span>
           </div>
           <div class="chart" id="seasonChart"></div>
-          <p class="note" id="seNote"></p>
+          <p class="note xp" id="seNote"></p>
         </div>
       </section>
 
       <section class="card acc method" id="sec-method">
         <h2><button type="button" class="acc-btn" aria-expanded="false" aria-controls="b-method">
-          <span><span class="acc-k">Reference</span><span class="acc-t">How to read this, and the method</span></span>
+          <span><span class="acc-k">Reference</span><span class="acc-t">How this works</span></span>
           <span></span>
           <svg class="chev" viewBox="0 0 18 18" aria-hidden="true"><path d="M4 7l5 5 5-5"/></svg>
         </button></h2>
         <div class="acc-body" id="b-method" hidden>
           <ul>
-            <li><b>Water vs snow.</b> Forecast snow amounts on this page are inches of snow. The longer-range and season sections use inches of <i>water</i>, because that is what the SNOTEL station measures and what long-range models forecast. 1″ of water ≈ 10–15″ of snow, depending on how cold it is.</li>
-            <li><b>Chance</b> = share of 154 forecasts (51 ECMWF, 51 ECMWF AI, 31 GFS ensemble, 21 Canada GEM, via Open-Meteo) that show at least that much snow. <b>Typical</b> is the middle forecast; <b>high end</b> (“up to”) is the 1-in-10 big outcome; the <b>likely range</b> runs from the 1-in-10 low to the 1-in-10 high.</li>
-            <li><b>Confidence</b> on the first card combines how far out the storm is and how much the four models disagree on amount and timing.</li>
-            <li>Snow is computed from each forecast’s water, using temperature to set how fluffy it is (5–13 inches of snow per inch of water; above freezing it counts as rain).</li>
-            <li>Summit water is scaled up to correct the models’ measured dry bias at Thaynes Canyon last season.</li>
-            <li>“Town” is a point near the resort base (7,000 ft), not a specific house. Snow varies a lot street to street.</li>
-            <li>Forecasts 8–10 days out catch big storms only about half to two-thirds of the time. Treat the back half as a heads-up, not a promise.</li>
-            <li>Snowpack is measured by the Thaynes Canyon SNOTEL (9,260 ft, on Park City Mountain). It weighs the water in the snow, not new snowfall. The 4-week outlook uses the 31-member GFS ensemble (35-day runs) at the same station.</li>
-            <li>Refreshes twice daily, about 5:45am and 2:45pm MT.</li>
-            <li>Sources: <a href="https://open-meteo.com">Open-Meteo</a> ensemble forecasts; <a href="https://wcc.sc.egov.usda.gov/nwcc/site?sitenum=814">NRCS Thaynes Canyon SNOTEL #814</a>; <a href="https://www.cpc.ncep.noaa.gov/">NOAA Climate Prediction Center</a> outlooks.</li>
-          </ul>
+            <li><b>Chance</b> = share of 154 forecasts (ECMWF, ECMWF AI, GFS ensemble, Canada GEM). <b>Typical</b> = middle forecast; <b>up to</b> = 1-in-10 high.</li>
+            <li><b>Snow vs water:</b> 10-day amounts are snow; season and 4-week figures are water. 1″ water ≈ 10–15″ snow.</li>
+            <li><b>Town</b> is near the resort base (7,000 ft). <b>Season</b> data is the Thaynes Canyon SNOTEL (9,260 ft).</li>
+            <li>Days 8–10 catch big storms only about half to two-thirds of the time.</li>
+            <li>Updates twice daily. <span id="updRef"></span></li>
+            <li>Sources: <a href="https://open-meteo.com">Open-Meteo</a>, <a href="https://wcc.sc.egov.usda.gov/nwcc/site?sitenum=814">NRCS SNOTEL #814</a>, <a href="https://www.cpc.ncep.noaa.gov/">NOAA CPC</a>.</li>
+</ul>
         </div>
       </section>
     </div>
@@ -538,6 +540,12 @@ try{openState=JSON.parse(lsGet('pcsnow-open-v5')||'{}')||{}}catch(e){openState={
 function defaultOpen(id){
   if(window.innerWidth>=960)return id==='days'||id==='storm'||id==='models';
   return false;
+}
+function addExplain(){
+  ['b-days','b-storm','b-models','b-long','b-season'].forEach(function(id){var b=$(id);if(!b||b.querySelector('.xp-btn'))return;
+    var bt=el('button','xp-btn','ⓘ Explain');bt.type='button';bt.setAttribute('aria-expanded','false');
+    bt.addEventListener('click',function(){var o=b.classList.toggle('xp-on');bt.setAttribute('aria-expanded',o?'true':'false');bt.textContent=o?'ⓘ Hide explanation':'ⓘ Explain';if(window.renderSeasonChart&&id==='b-season'){}});
+    b.appendChild(bt);});
 }
 function setOpen(id,open,persist){
   var body=$('b-'+id),btn=document.querySelector('[aria-controls="b-'+id+'"]');if(!body||!btn)return;
@@ -652,15 +660,15 @@ function miniBars(vals,max,hi,ref){
 function setViz(id,node){var b=$('vz-'+id);clear(b);b.appendChild(node)}
 
 /* ---------- render ---------- */
-function renderAll(){
+function renderAll(){addExplain();
   syncSeg('siteSeg',site);
-  $('updated').textContent='Updated '+D.updated_label;
+  $('updated').textContent='Updated '+D.updated_label;var ur=$('updRef');if(ur)ur.textContent='Last: '+D.updated_label+'.';
   renderForecast();renderSeasonBody();renderLong();
 }
 function renderForecast(){
   var f=F();
-  $('hdrSub').textContent=siteName()+' · 10-day outlook';
-  $('g1sub').textContent=(site==='summit'?'Summit, 9,715 ft':'Town, 7,000 ft')+' · follows the Summit/Town switch';
+  $('hdrSub').textContent='Updated '+D.updated_label.replace(/ MT$/,'');
+  $('g1sub').textContent=(site==='summit'?'Summit, 9,715 ft':'Town, 7,000 ft');
   renderGlance(f);renderDays(f);renderStorm(f);renderModels(f);
 }
 
@@ -687,7 +695,10 @@ function renderGlance(f){
   // confidence
   var c=confidence(f),cb=$('conf');clear(cb);
   var pp=el('div','pips');pp.setAttribute('aria-hidden','true');for(var k=1;k<=3;k++)pp.appendChild(el('i',k<=c.lvl?'on':null));cb.appendChild(pp);
-  var p=el('p');p.appendChild(el('b',null,c.word+' confidence: '));p.appendChild(document.createTextNode(c.why.charAt(0).toUpperCase()+c.why.slice(1)));cb.appendChild(p);
+  var p=el('p');var tb=el('button','conf-tog');tb.type='button';tb.setAttribute('aria-expanded','false');
+  tb.appendChild(el('b',null,c.word+' confidence'));tb.appendChild(el('span','i','ⓘ'));
+  tb.addEventListener('click',function(){var o=cb.classList.toggle('open');tb.setAttribute('aria-expanded',o?'true':'false')});
+  p.appendChild(tb);p.appendChild(el('span','conf-why',c.why.charAt(0).toUpperCase()+c.why.slice(1)+'.'));cb.appendChild(p);cb.insertBefore(p,cb.firstChild.nextSibling);
   // 10-day strip
   $('stripSite').textContent=siteName();
   var box=$('strip10');clear(box);
@@ -717,7 +728,7 @@ function renderDays(f){
   var st=storyFor(f),ul=$('days');clear(ul);
   var sd=f.days[st.si],t=f.total;
   var win=st.inWindow&&st.a<st.b?'Snow likely '+f.days[st.a].dow+'–'+f.days[st.b].dow+'; ':'';
-  $('dh').textContent=nb(st.inWindow?win+(win?'peak ':'Peak ')+sd.dow+' '+sd.dom+': typical '+inch(sd.p50)+', up to '+inch(sd.p90)+'.':'No snowy day stands out; best chance '+sd.dow+' '+sd.dom+' ('+sd.p['1']+'% for 1″+).');
+  $('dh').textContent=nb(st.inWindow?'Peak '+sd.dow+' '+sd.dom+': ~'+inch(sd.p50)+', up to '+inch(sd.p90):'No standout day; best '+sd.dow+' '+sd.dom+' ('+sd.p['1']+'%)');
   setViz('days',miniBars(f.days.map(function(d){return d.p['1']}),100,function(i){return i===st.si}));
   // total odds
   $('oddsTitle').textContent='Odds for the 10-day total at '+(site==='summit'?'the summit':'town');
@@ -787,7 +798,7 @@ function renderStorm(f){
   var sdd=f.days[stormIdx(f)];$('sEyebrow').textContent='Storm timing · '+(sdd?sdd.label:st.label);
   if(!bl||!bl.length){$('sh').textContent='No storm timing available.';clear($('stripBox'));clear($('vz-storm'));return}
   var si=stormInfo(bl);
-  $('sh').textContent='Heaviest '+si.hv+'; about '+inch(si.tot)+' over 36 hours.';
+  $('sh').textContent='Heaviest '+si.hv+' · ~'+inch(si.tot)+' in 36 h';
   setViz('storm',miniBars(bl.map(function(b){return b.mean}),Math.max.apply(null,bl.map(function(b){return b.mean}))||1,function(i){return i>=si.i0&&i<=si.i1}));
   $('sSub').textContent='3-hour windows from 6pm the evening before to 6am the day after, at '+siteLong()+'. Tap a window for details.';
   var co=$('sCallouts');clear(co);
@@ -872,7 +883,7 @@ function drawStorm(f){
 function renderModels(f){
   var ms=modelStats(f),bm=ms.bm,names=ms.names,box=$('models');clear(box);
   var mx=ms.mx,mn=ms.mn;
-  $('mh').textContent=(ms.timingAgree?'Agree on timing':'Differ on timing')+', '+(ms.ratio>1.6?'split on amount: ':'similar amounts: ')+inch(mn)+' to '+inch(mx)+'.';
+  $('mh').textContent=(ms.timingAgree?'Same timing':'Different timing')+' · totals '+inch(mn)+'–'+inch(mx);
   // mini: dots on a 0..max line
   var w=84,h=30,s=sv('svg',{width:'100%',height:h,viewBox:'0 0 '+w+' '+h,preserveAspectRatio:'none'}),X=function(v){return 4+(w-8)*v/(mx||1)};
   s.appendChild(sv('line',{x1:4,x2:w-4,y1:h/2,y2:h/2,stroke:'var(--track)','stroke-width':6,'stroke-linecap':'round'}));
@@ -905,7 +916,7 @@ function renderLong(){
   var best=null;W.forEach(function(w){if(w.p_above!=null&&(best==null||w.p_above>best.p_above))best=w});
   var c814=(L.cpc||[]).filter(function(o){return /8.14/.test(o.name)})[0];
   var noaa=c814&&c814.precip?(c814.precip.cat==='Above'?' NOAA leans wet too.':c814.precip.cat==='Below'?' NOAA leans dry.':''):'';
-  $('lh').textContent=best&&best.p_above>=55?('Week of '+shortRange(best.label)+' looks wetter than normal ('+best.p_above+'%).'+noaa):(W.length?'No week looks clearly wetter than normal yet.'+noaa:'Longer-range outlook unavailable.');
+  $('lh').textContent=best&&best.p_above>=55?(shortRange(best.label)+': '+best.p_above+'% chance wetter than normal'):(W.length?'No week looks clearly wetter than normal':'Longer-range outlook unavailable.');
   setViz('long',miniBars(W.map(function(w){return w.p_above||0}),100,function(i,v){return v>=55},50));
   var mx=0;W.forEach(function(w){mx=Math.max(mx,w.p90||0,w.normal||0)});mx=Math.max(0.5,Math.ceil(mx*2)/2);
   var pct=function(v){return Math.max(0,Math.min(100,100*(v||0)/mx))+'%'};
@@ -948,7 +959,7 @@ function renderSeasonBody(){
   var s=D.season,t=s.today,isS=metric==='swe';
   $('seEyebrow').textContent='This season · '+s.water_year;
   var w=function(pct){return pct==null?'':pct>=115?'ahead of normal':pct>=90?'near normal':'behind normal'};
-  $('seh').textContent=(t.swe_pct!=null?'Snowpack is '+t.swe_pct+'% of normal for '+t.label+' ('+w(t.swe_pct)+')':'Snowpack: '+t.swe+'″ of water')+', '+(t.swe>=t.swe_2223?'ahead of':'behind')+' record 2022–23.';
+  $('seh').textContent=(t.swe_pct!=null?'Snowpack '+t.swe_pct+'% of normal':'Snowpack '+t.swe+'″ water')+' · '+(t.swe_2223?Math.round(100*t.swe/t.swe_2223)+'% of 2022–23':'');
   // mini: this vs normal vs 2022-23 today
   var vz=sv('svg',{width:'100%',height:30,viewBox:'0 0 84 30',preserveAspectRatio:'none'});
   var mxv=Math.max(t.swe,t.swe_med,t.swe_2223)||1;
@@ -959,10 +970,10 @@ function renderSeasonBody(){
   $('seChartTitle').textContent=isS?'Snowpack: the water stored in the snow on the ground, the best single measure of the season so far.':'Precipitation since Oct 1 (rain + snow water): '+pct+'% of normal for '+t.label+', '+(cur>=y23?'ahead of':'behind')+' 2022–23.';
   var tl=$('tiles');clear(tl);
   function tile(big,lab,em){var d=el('div','tile');d.appendChild(el('b',null,big));d.appendChild(el('span',null,lab));if(em)d.appendChild(el('em',null,em));tl.appendChild(d)}
-  tile(t.swe+'″','water in the snowpack','Normal for '+t.label+': '+t.swe_med+'″');
-  tile(Math.round(100*t.swe/t.swe_2223)+'%','of 2022–23 on this date','2022–23: '+t.swe_2223+'″ water');
-  tile(t.depth!=null?t.depth+'″':'–','snow on the ground',t.depth_2223!=null?'2022–23 same day: '+t.depth_2223+'″':'');
-  tile(s.peaks.median.swe+'″','normal peak water ('+s.peaks.median.label+')','2022–23 peak: '+s.peaks.y2223.swe+'″ ('+s.peaks.y2223.label+')');
+  tile(t.swe+'″','water in snowpack','normal '+t.swe_med+'″');
+  tile(t.swe_2223+'″','2022–23, same day');
+  tile(t.depth!=null?t.depth+'″':'–','snow depth');
+  tile(s.peaks.median.swe+'″','normal peak','2022–23: '+s.peaks.y2223.swe+'″');
   $('seNote').textContent=isS?'The shaded wedge is the 10-day forecast at this station (middle forecast dotted; 1-in-10 low and high at its edges), assuming no melt.':'Counts all water that fell (rain and snow). A wet October can run high even if little of it stuck as snow.';
   renderSeasonChart();
 }
