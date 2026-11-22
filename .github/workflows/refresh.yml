@@ -1,0 +1,44 @@
+name: Refresh forecast data
+
+on:
+  schedule:
+    # 12:45 and 21:45 UTC = 5:45 am and 2:45 pm MST (6:45 am / 3:45 pm during daylight time)
+    - cron: '45 12,21 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - run: pip install requests numpy pandas pyshp shapely
+      - name: Build data.json
+        run: python build.py .
+      - name: Sanity check
+        run: |
+          python - <<'PY'
+          import json
+          j = json.load(open('data.json'))
+          f = j['forecast']
+          assert len(f['summit']['days']) >= 8 and len(f['town']['days']) >= 8
+          assert isinstance(j['season']['today']['swe'], (int, float))
+          print('OK', j['updated_label'], f['summit']['storm']['day'], f['summit']['total']['p50'])
+          PY
+      - name: Commit if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data.json
+          git diff --cached --quiet || (git commit -m "Refresh forecast data" && git push)

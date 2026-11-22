@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Park City Snow Outlook</title>
+<style>
+:root{
+  color-scheme: light;
+  --bg:#f4f6f8; --card:#ffffff; --text:#0f1720; --text2:#3f4a57; --muted:#5b6674; --line:#e1e6ec; --track:#e8edf2;
+  --accent:#1765c8; --accent-ink:#1258b0; --accent-soft:#e7f0fc; --on-accent:#ffffff;
+  --p1:#bdd8f7; --p3:#6fa8eb; --p6:#1765c8;
+  --l0:#eef2f6; --l1:#d3e4f8; --l2:#8fbcf0; --l3:#1765c8; --l0t:#5b6674; --l1t:#0f1720; --l2t:#0f1720; --l3t:#ffffff;
+  --warm:#9a4a12; --warm-fill:#d9792f; --warm-soft:#fbeee2;
+  --violet:#7d67b8; --median:#8b95a3; --bar:#9aa4b1;
+  --shadow:0 1px 2px rgba(15,23,32,.05),0 1px 8px rgba(15,23,32,.04);
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    color-scheme: dark;
+    --bg:#0d1015; --card:#161b22; --text:#e9eef4; --text2:#bcc6d1; --muted:#a0abb8; --line:#28303a; --track:#202731;
+    --accent:#64a8ff; --accent-ink:#8cbfff; --accent-soft:#15263b; --on-accent:#07111d;
+    --p1:#2f5d93; --p3:#3a7cd0; --p6:#8cc2ff;
+    --l0:#1d232c; --l1:#1f3756; --l2:#2f6cb8; --l3:#8cc2ff; --l0t:#a0abb8; --l1t:#e9eef4; --l2t:#ffffff; --l3t:#07111d;
+    --warm:#f2ad6d; --warm-fill:#d9792f; --warm-soft:#33241a;
+    --violet:#ad9be6; --median:#7f8a99; --bar:#5d6876;
+    --shadow:none;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.45 -apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;font-variant-numeric:tabular-nums}
+a{color:var(--accent-ink)}
+button{font:inherit;color:inherit}
+[hidden]{display:none!important}
+.wrap{max-width:1160px;margin:0 auto;padding:0 12px 32px}
+
+/* header */
+.top{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:saturate(1.4) blur(10px);-webkit-backdrop-filter:saturate(1.4) blur(10px);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-top:6px;padding-bottom:6px}
+.brand{font-weight:700;font-size:16px;letter-spacing:-.01em;white-space:nowrap}
+.brand small{display:block;font-weight:500;font-size:13px;color:var(--muted)}
+.seg{display:inline-flex;background:var(--track);border-radius:12px;padding:3px;gap:2px;flex-wrap:wrap}
+.seg button{min-height:44px;min-width:44px;border:0;background:transparent;border-radius:9px;padding:4px 12px;font-size:14px;font-weight:600;color:var(--text2);cursor:pointer;line-height:1.15;text-align:center}
+.seg button small{display:block;font-weight:500;font-size:13px;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--card);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.seg button[aria-pressed="true"] small{color:var(--text2)}
+.seg.small button{font-size:13px;padding:4px 11px}
+button:focus-visible,.dayrow:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+/* cards */
+.card{background:var(--card);border-radius:16px;box-shadow:var(--shadow);border:1px solid var(--line);min-width:0}
+.eyebrow{font-size:13px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin:0}
+.sub{color:var(--text2);margin:0 0 12px;font-size:14px}
+.note{color:var(--muted);font-size:13px;margin:10px 0 0}
+h3.h3{font-size:15px;margin:18px 0 8px;letter-spacing:-.01em}
+h3.h3:first-child{margin-top:4px}
+
+/* ---------- GLANCE ---------- */
+.glance{padding:14px 14px 12px;margin-top:10px}
+.glance .eyebrow{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.glance .eyebrow span:last-child{font-weight:500;text-transform:none;letter-spacing:0}
+.glance h1{font-size:22px;line-height:1.22;margin:6px 0 2px;letter-spacing:-.02em}
+.glance h1 .hl{color:var(--accent-ink)}
+.gsub{margin:0;color:var(--text2);font-size:14px}
+.totals{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0 0}
+.tot{border-radius:12px;padding:8px 11px;background:var(--track);border:2px solid transparent}
+.tot.sel{background:var(--accent-soft);border-color:var(--accent)}
+.tot .tk{font-size:13px;font-weight:600;color:var(--text2);display:flex;justify-content:space-between;gap:4px}
+.tot .tk em{font-style:normal;font-weight:500;color:var(--muted)}
+.tot .tv{font-size:30px;font-weight:750;line-height:1.05;letter-spacing:-.02em}
+.tot.sel .tv{color:var(--accent-ink)}
+.tot .tr{font-size:13px;color:var(--text2)}
+.stripcap{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin:14px 0 6px;font-size:13px;color:var(--text2)}
+.stripcap b{color:var(--text);font-size:14px}
+.days10{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:3px}
+.sc{display:flex;flex-direction:column;align-items:center;min-width:0;text-align:center;line-height:1.15}
+.sc .dw{font-size:13px;font-weight:600;color:var(--text2)}
+.sc .dd{font-size:13px;color:var(--muted)}
+.sc .bx{width:100%;height:40px;margin:4px 0 4px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;letter-spacing:-.02em}
+.bx.v0{background:var(--l0);color:var(--l0t);font-weight:600}.bx.v1{background:var(--l1);color:var(--l1t)}.bx.v2{background:var(--l2);color:var(--l2t)}.bx.v3{background:var(--l3);color:var(--l3t)}
+.sc.pk .bx{box-shadow:0 0 0 2px var(--card),0 0 0 4px var(--text)}
+.sc.pk .dw{color:var(--text);font-weight:800}
+.sc .am{font-size:13px;font-weight:700;color:var(--text)}
+.sc .am.z{color:var(--muted);font-weight:500}
+.brk{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:3px;margin-top:2px;height:20px}
+.brk span{border-top:3px solid var(--accent);border-radius:2px;text-align:center;font-size:13px;font-weight:700;color:var(--accent-ink);white-space:nowrap;line-height:15px;overflow:visible}
+.keyrow{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;font-size:13px;color:var(--muted);margin-top:6px}
+.keyrow i{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-2px;margin-right:3px}
+.conf{display:flex;align-items:flex-start;gap:10px;margin-top:12px;padding-top:10px;border-top:1px solid var(--line)}
+.pips{display:flex;gap:3px;flex:none;margin-top:4px}
+.pips i{width:14px;height:8px;border-radius:2px;background:var(--track)}
+.pips i.on{background:var(--text2)}
+.conf p{margin:0;font-size:14px;color:var(--text2)}
+.conf p b{color:var(--text)}
+.upd{font-size:13px;color:var(--muted);margin-top:8px}
+
+/* ---------- SCAN: groups + accordions ---------- */
+.ghead{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:18px 4px 8px}
+.ghead h2{font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--text2);margin:0;line-height:1.3}
+.ghead h2 small{display:block;text-transform:none;letter-spacing:0;font-weight:500;font-size:13px;color:var(--muted)}
+.linkbtn{border:0;background:transparent;color:var(--accent-ink);font-weight:600;font-size:14px;min-height:44px;padding:0 6px;cursor:pointer;white-space:nowrap}
+.stack{display:grid;gap:8px}
+.acc{overflow:hidden}
+.acc h2{margin:0;font-size:inherit}
+.acc-btn{width:100%;display:grid;grid-template-columns:minmax(0,1fr) auto 18px;align-items:center;gap:10px;text-align:left;border:0;background:transparent;padding:11px 12px 11px 14px;min-height:64px;cursor:pointer;border-radius:16px}
+.acc-btn:hover{background:color-mix(in srgb,var(--track) 45%,transparent)}
+.acc-k{display:block;font-size:13px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+.acc-t{display:block;font-size:16px;font-weight:700;line-height:1.28;letter-spacing:-.01em;margin-top:1px;color:var(--text)}
+.acc-viz{display:block;width:64px;height:30px}
+.acc-viz svg{display:block}
+.chev{width:18px;height:18px;transition:transform .15s}
+.chev path{fill:none;stroke:var(--muted);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.acc-btn[aria-expanded="true"] .chev{transform:rotate(180deg)}
+.acc-body{padding:2px 14px 16px;border-top:1px solid var(--line)}
+.acc-body>:first-child{margin-top:12px}
+
+/* total odds */
+.odds{display:grid;gap:6px;margin:4px 0 6px}
+.odd{display:grid;grid-template-columns:44px minmax(0,1fr) 40px;gap:8px;align-items:center;font-size:14px}
+.odd .ol{color:var(--text2);font-weight:600}
+.odd .ob{height:12px;border-radius:6px;background:var(--track);overflow:hidden}
+.odd .ob i{display:block;height:100%;background:var(--p3);border-radius:6px}
+.odd .ov{text-align:right;font-weight:700}
+
+/* day list */
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;color:var(--text2);margin:2px 0 10px}
+.legend i{display:inline-block;width:14px;height:10px;border-radius:3px;vertical-align:-1px;margin-right:5px}
+.lg-line{display:inline-block;width:18px;height:0;border-top:2.5px solid;vertical-align:4px;margin-right:6px}
+.dayhead{display:grid;grid-template-columns:62px 1fr 86px;gap:10px;font-size:13px;color:var(--muted);padding:0 6px 4px}
+.dayhead span:last-child{text-align:right}
+.days{list-style:none;margin:0;padding:0}
+.dayrow{display:block;width:100%;text-align:left;border:0;background:transparent;border-radius:12px;padding:0;cursor:pointer}
+.days li{border-top:1px solid var(--line)}
+.days li:first-child,.days li.storm,.days li.storm+li{border-top-color:transparent}
+.dayrow .r{display:grid;grid-template-columns:62px 1fr 86px;gap:10px;align-items:center;min-height:50px;padding:5px 6px}
+.days li.storm .dayrow{background:var(--accent-soft)}
+.dname{font-weight:700;font-size:15px;line-height:1.15}
+.dname small{display:block;font-weight:500;font-size:13px;color:var(--muted)}
+.dname sup{font-size:13px;color:var(--muted);font-weight:600}
+.pbar{position:relative;height:16px;border-radius:5px;background:var(--track);overflow:hidden}
+.pbar i{position:absolute;left:0;top:0;bottom:0;border-radius:5px}
+.pbar .b1,.vbar .b1{background:var(--p1)}.pbar .b3,.vbar .b3{background:var(--p3)}.pbar .b6,.vbar .b6{background:var(--p6)}
+.pwrap{display:flex;align-items:center;gap:8px}
+.pwrap .pbar{flex:1}
+.pct{font-weight:700;font-size:15px;min-width:38px;text-align:right}
+.pct.low{color:var(--muted);font-weight:600}
+.amt{text-align:right;line-height:1.15}
+.amt b{font-size:16px}
+.amt b.z{color:var(--muted);font-weight:600}
+.amt small{display:block;font-size:13px;color:var(--muted)}
+.tag{display:inline-block;font-size:13px;font-weight:700;color:var(--on-accent);background:var(--accent);padding:1px 6px;border-radius:6px;margin-top:3px;letter-spacing:.02em}
+.more{display:none;padding:0 6px 10px 78px;font-size:13px;color:var(--text2)}
+.dayrow[aria-expanded="true"] .more{display:block}
+.more span{display:inline-block;margin-right:12px;white-space:nowrap}
+
+/* desktop day chart */
+.dchart{display:none}
+.dcols{display:grid;grid-template-columns:repeat(10,1fr);gap:8px}
+.dcol{border:0;background:transparent;border-radius:12px;padding:8px 4px 10px;cursor:pointer;text-align:center;min-width:0;display:flex;flex-direction:column;align-items:center}
+.dcol:hover{background:var(--track)}
+.dcol.storm{background:var(--accent-soft)}
+.dcol .ptop{font-weight:700;font-size:15px;height:22px}
+.dcol .ptop.low{color:var(--muted);font-weight:600}
+.vbar{position:relative;height:130px;width:34px;margin:4px auto 8px;border-radius:6px;background:var(--track);overflow:hidden}
+.vbar i{position:absolute;left:0;right:0;bottom:0;border-radius:6px}
+.dcol .dd{font-weight:700;font-size:15px}
+.dcol .dd small{display:block;font-weight:500;color:var(--muted);font-size:13px}
+.dcol .dv{margin-top:6px;font-size:13px;color:var(--text2);line-height:1.35}
+.dcol .dv b{font-size:16px;color:var(--text)}
+.dcol .dv b.z{color:var(--muted);font-weight:600}
+
+/* storm strip */
+.strip svg{display:block;width:100%;overflow:visible}
+.strip text{font-size:13px;fill:var(--text2)}
+.cell{cursor:pointer;outline:none}
+.cell:focus-visible rect:first-child{stroke:var(--text);stroke-width:2}
+.callout{margin:12px 0 0;padding:11px 13px;border-radius:12px;background:var(--accent-soft);font-size:14px}
+.callout b{color:var(--accent-ink)}
+.rainnote{background:var(--warm-soft)}
+.rainnote b{color:var(--warm)}
+
+/* models */
+.mrow{display:grid;grid-template-columns:100px 1fr;gap:4px 12px;align-items:start;padding:9px 0;border-top:1px solid var(--line)}
+.mrow:first-of-type{border-top:0}
+.mline{display:flex;align-items:center;gap:8px}
+.mline .mbar{flex:none}
+.mname{font-size:14px;font-weight:600;line-height:1.15}
+.mname small{display:block;font-size:13px;color:var(--muted);font-weight:500}
+.mbar{height:14px;border-radius:0 5px 5px 0;background:var(--bar)}
+.mval{font-weight:700;font-size:16px;white-space:nowrap}
+.mcap{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin:0 0 2px 112px}
+.spark{display:flex;align-items:flex-end;gap:2px;height:24px;margin-top:6px;border-bottom:1px solid var(--line)}
+.spark i{flex:1;background:var(--track);border-radius:2px 2px 0 0;min-height:2px}
+.spark i.s{background:var(--p3)}
+.mtrack{min-width:0}
+
+/* longer range */
+.wkhead,.wkrow{display:grid;grid-template-columns:92px minmax(0,1fr) 46px;gap:10px;align-items:center}
+.wkhead{font-size:13px;color:var(--muted);padding:0 0 4px}
+.wkhead span:last-child{text-align:right}
+.wkrow{padding:9px 0;border-top:1px solid var(--line)}
+.wkrow .wl{font-size:14px;font-weight:700;line-height:1.2}
+.wkrow .wl small{display:block;font-weight:500;font-size:13px;color:var(--muted)}
+.wksep{font-size:13px;font-weight:600;color:var(--warm);padding:10px 0 2px;border-top:1px solid var(--line)}
+.wksep+.wkrow{border-top:0}
+.wkrow .wp{font-size:20px;font-weight:800;text-align:right}
+.wkrow .wp.hi{color:var(--accent-ink)}
+.wkrow .wp.lo{color:var(--muted);font-weight:700}
+.wkrow .ws{font-size:13px;color:var(--text2);margin-top:4px;line-height:1.3}
+.wsx{display:none}
+.wbar{position:relative;height:14px;border-radius:7px;background:var(--track)}
+.wbar .rng{position:absolute;top:3px;height:8px;border-radius:4px;background:var(--accent);opacity:.3}
+.wbar .mid{position:absolute;top:0;width:4px;height:14px;border-radius:2px;background:var(--accent);margin-left:-2px}
+.wbar .nrm{position:absolute;top:-4px;width:2px;height:22px;background:var(--text);margin-left:-1px}
+.wscale{display:grid;grid-template-columns:92px minmax(0,1fr) 46px;gap:10px;font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:4px}
+.wscale div{display:flex;justify-content:space-between}
+.cpcrow{display:grid;grid-template-columns:minmax(0,1fr);gap:4px;padding:9px 0;border-top:1px solid var(--line)}
+.cpcrow .cn{font-size:14px;font-weight:700}
+.cpcrow .cn small{font-weight:500;color:var(--muted);font-size:13px;margin-left:6px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{font-size:13px;border-radius:999px;padding:3px 10px;background:var(--track);color:var(--text2)}
+.pill b{font-weight:700}
+.pill.wet,.pill.cold{background:var(--accent-soft);color:var(--accent-ink)}
+.pill.dry,.pill.warm{background:var(--warm-soft);color:var(--warm)}
+.pill.ec{background:transparent;border:1px dashed var(--line);color:var(--muted)}
+
+/* season */
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:4px 0 12px}
+.tile{border:1px solid var(--line);border-radius:12px;padding:9px 11px}
+.tile b{display:block;font-size:22px;line-height:1.15;letter-spacing:-.01em}
+.tile span{display:block;font-size:13px;color:var(--text2)}
+.tile em{font-style:normal;color:var(--muted);font-size:13px}
+.controls{display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between;align-items:center;margin:4px 0 8px}
+.chart svg{display:block;width:100%;overflow:visible;touch-action:pan-y}
+.chart text{font-size:13px;fill:var(--muted)}
+.halo{paint-order:stroke;stroke:var(--card);stroke-width:5px;stroke-linejoin:round}
+.chartttl{font-size:14px;font-weight:600;margin:6px 0 4px;color:var(--text)}
+
+/* method */
+.method ul{padding-left:20px;margin:0;color:var(--text2)}
+.method li{margin:6px 0}
+
+/* tooltip */
+.tip{position:fixed;z-index:50;pointer-events:none;background:var(--text);color:var(--bg);padding:8px 10px;border-radius:10px;font-size:13px;line-height:1.4;max-width:240px;box-shadow:0 4px 16px rgba(0,0,0,.2);opacity:0;transition:opacity .1s}
+.tip.on{opacity:1}
+.tip b{display:block;font-size:14px;margin-bottom:2px}
+.tip .sw{display:inline-block;width:10px;height:3px;border-radius:2px;vertical-align:3px;margin-right:6px}
+
+/* states */
+.state{padding:60px 16px;text-align:center;color:var(--text2)}
+.spinner{width:28px;height:28px;border-radius:50%;border:3px solid var(--track);border-top-color:var(--accent);margin:0 auto 14px;animation:spin .9s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.retry{margin-top:14px;min-height:44px;padding:0 18px;border-radius:10px;border:1px solid var(--line);background:var(--card);font-weight:600;cursor:pointer}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.footer{font-size:13px;color:var(--muted);text-align:center;margin-top:16px}
+
+@media (prefers-reduced-motion: reduce){.spinner{animation:none}.tip,.chev{transition:none}}
+
+@media (max-width:370px){
+  .glance h1{font-size:20px}
+  .tot .tv{font-size:26px}
+  .sc .dw,.sc .dd{font-size:13px;letter-spacing:-.03em}
+  .acc-viz{display:none}
+  .acc-btn{grid-template-columns:minmax(0,1fr) 18px}
+}
+@media (min-width:600px){
+  .wrap{padding-left:16px;padding-right:16px}
+  .glance{padding:18px 20px 14px}
+  .glance h1{font-size:26px}
+  .days10{gap:6px}.brk{gap:6px}
+  .sc .bx{height:48px;font-size:14px}
+  .acc-btn{padding:12px 18px 12px 20px}
+  .acc-body{padding:2px 20px 20px}
+  .acc-viz{width:84px}
+}
+@media (min-width:760px){
+  .dchart{display:block}
+  .dlist{display:none}
+  .odds{grid-template-columns:repeat(5,1fr);gap:10px}
+  .odd{grid-template-columns:1fr;gap:4px;text-align:left}
+  .odd .ov{text-align:left;font-size:20px;order:-1}
+  .wkhead,.wkrow,.wscale{grid-template-columns:150px minmax(0,1fr) 60px}
+  .cpcrow{grid-template-columns:220px minmax(0,1fr);align-items:center}
+  .tiles{grid-template-columns:repeat(4,1fr)}
+  .wsx{display:inline}
+}
+@media (min-width:960px){
+  .wrap{padding-left:24px;padding-right:24px}
+  .glance{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:8px 32px;padding:22px 26px 18px}
+  .glance .gl{grid-column:1;grid-row:1/3}
+  .glance .gr{grid-column:2;grid-row:1}
+  .glance h1{font-size:28px}
+  .glance .stripcap{margin-top:0}
+  .sc .bx{height:84px;font-size:16px;border-radius:10px}
+  .sc .dw,.sc .dd{font-size:14px}
+  .sc .am{font-size:16px}
+  .days10,.brk{gap:8px}
+  .glance .keyrow{margin-top:10px}
+  .stack.two{grid-template-columns:minmax(0,7fr) minmax(0,5fr);align-items:start}
+  .stack.two .full{grid-column:1/-1}
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <div class="brand">Park City Snow<small id="hdrSub">10-day outlook</small></div>
+    <div class="seg" role="group" aria-label="Forecast location (affects the 10-day forecast)" id="siteSeg">
+      <button type="button" data-site="summit" aria-pressed="true">Summit<small>9,715 ft</small></button>
+      <button type="button" data-site="town" aria-pressed="false">Town<small>7,000 ft</small></button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap" id="main">
+  <div class="state" id="loading" role="status"><div class="spinner"></div>Loading the latest forecast…</div>
+  <div class="state" id="error" hidden role="alert">
+    <h2>Couldn’t load the forecast</h2>
+    <p>The data file didn’t come through. This is usually temporary.</p>
+    <button class="retry" type="button" id="retry">Try again</button>
+  </div>
+
+  <div id="app" hidden>
+    <!-- GLANCE -->
+    <section class="card glance" aria-labelledby="vh">
+      <div class="gl">
+        <p class="eyebrow"><span>Next 10 days</span><span id="gDates"></span></p>
+        <h1 id="vh"></h1>
+        <p class="gsub" id="vSub"></p>
+        <div class="totals" id="totals" role="group" aria-label="Most likely 10-day snow totals"></div>
+        <div class="conf" id="conf"></div>
+        <div class="upd" id="updated"></div>
+      </div>
+      <div class="gr">
+        <div class="stripcap"><b id="stripTitle">Chance of 1″+ each day</b><span id="stripSite"></span></div>
+        <div id="strip10" role="img"></div>
+        <div class="keyrow" aria-hidden="true">
+          <span><i style="background:var(--l1)"></i>15–34%</span><span><i style="background:var(--l2)"></i>35–59%</span><span><i style="background:var(--l3)"></i>60%+</span><span><b style="color:var(--text)">3.5</b> = typical inches</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCAN: 10-day forecast group -->
+    <div class="ghead">
+      <h2 id="g1">10-day forecast <small id="g1sub">Summit, 9,715 ft · follows the Summit/Town switch</small></h2>
+      <button type="button" class="linkbtn" id="toggleAll">Expand all</button>
+    </div>
+    <div class="stack two">
+      <section class="card acc full" id="sec-days">
+        <h2><button type="button" class="acc-btn" aria-expanded="false" aria-controls="b-days">
+          <span><span class="acc-k">Day by day</span><span class="acc-t" id="dh"></span></span>
+          <span class="acc-viz" id="vz-days" aria-hidden="true"></span>
+          <svg class="chev" viewBox="0 0 18 18" aria-hidden="true"><path d="M4 7l5 5 5-5"/></svg>
+        </button></h2>
+        <div class="acc-body" id="b-days" hidden>
+          <h3 class="h3" id="oddsTitle">Odds for the 10-day total</h3>
+          <div class="odds" id="odds"></div>
+          <p class="note" id="oddsNote" style="margin:4px 0 0"></p>
+          <h3 class="h3">Each day</h3>
+          <div class="legend" aria-hidden="true">
+            <span><i style="background:var(--p1)"></i>chance of 1″+</span>
+            <span><i style="background:var(--p3)"></i>3″+</span>
+            <span><i style="background:var(--p6)"></i>6″+</span>
+          </div>
+          <div class="dlist">
+            <div class="dayhead" aria-hidden="true"><span>Day</span><span>Chance of 1″+</span><span>Typical / high</span></div>
+            <ul class="days" id="days"></ul>
+          </div>
+          <div class="dchart" id="dchart"><div class="dcols" id="dcols"></div></div>
+          <p class="note" id="dFoot"></p>
+        </div>
+      </section>
+
+      <section class="card acc strip" id="sec-storm">
+        <h2><button type="button" class="acc-btn" aria-expanded="false" aria-controls="b-storm">
+          <span><span class="acc-k" id="sEyebrow">Storm timing</span><span class="acc-t" id="sh"></span></span>
+          <span class="acc-viz" id="vz-storm" aria-hidden="true"></span>
+          <svg class="chev" viewBox="0 0 18 18" aria-hidden="true"><path d="M4 7l5 5 5-5"/></svg>
+        </button></h2>
+        <div class="acc-body" id="b-storm" hidden>
+          <p class="sub" id="sSub"></p>
+          <div id="stripBox"></div>
+          <div class="legend" id="sLegend" style="margin-top:8px"></div>
+          <div id="sCallouts"></div>
+        </div>
+      </section>
+
+      <section class="card acc" id="sec-models">
+        <h2><button type="button" class="acc-btn" aria-expanded="false" aria-controls="b-models">
+          <span><span class="acc-k">The models</span><span class="acc-t" id="mh"></span></span>
+          <span class="acc-viz" id="vz-models" aria-hidden="true"></span>
+          <svg class="chev" viewBox="0 0 18 18" aria-hidden="true"><path d="M4 7l5 5 5-5"/></svg>
+        </button></h2>
+        <div class="acc-body" id="b-models" hidden>
+          <p class="sub">10-day total from each forecast model, with its day-by-day shape underneath.</p>
+          <div id="models"></div>
+          <p class="note">In last season’s backtest, ECMWF, ECMWF AI and GFS ensemble were about equally accurate at 10 days out, so the headline numbers blend all four rather than trusting one.</p>
+        </div>
+      </section>
+    </div>
+
+    <!-- SCAN: bigger picture group -->
+    <div class="ghead">
+      <h2 id="g2">Bigger picture <small id="g2sub">Thaynes Canyon station, 9,260 ft · not affected by Summit/Town</small></h2>
+    </div>
+    <div class="stack">
+      <section class="card acc" id="sec-long">
+        <h2><button type="button" class="acc-btn" aria-expanded="false" aria-controls="b-long">
+          <span><span class="acc-k">Next 4 weeks &amp; beyond</span><span class="acc-t" id="lh"></span></span>
+          <span class="acc-viz" id="vz-long" aria-hidden="true"></span>
+          <svg class="chev" viewBox="0 0 18 18" aria-hidden="true"><path d="M4 7l5 5 5-5"/></svg>
+        </button></h2>
+        <div class="acc-body" id="b-long" hidden>
+          <h3 class="h3">Chance each week is wetter than normal</h3>
+          <div class="wkhead" aria-hidden="true"><span>Week</span><span>Water vs a normal week</span><span>Wetter</span></div>
+          <div id="weeks"></div>
+          <div class="wscale" aria-hidden="true" id="wscale"></div>
+          <p class="note" id="wkNote"></p>
+          <h3 class="h3">NOAA’s official outlooks</h3>
+          <div id="cpc"></div>
+          <p class="note">From NOAA’s Climate Prediction Center: odds of a wetter, drier, warmer or colder period than normal, not amounts. “No tilt” means forecasters can’t call it, not that a normal period is coming.</p>
+        </div>
+      </section>
+
+      <section class="card acc" id="sec-season">
+        <h2><button type="button" class="acc-btn" aria-expanded="false" aria-controls="b-season">
+          <span><span class="acc-k" id="seEyebrow">This season</span><span class="acc-t" id="seh"></span></span>
+          <span class="acc-viz" id="vz-season" aria-hidden="true"></span>
+          <svg class="chev" viewBox="0 0 18 18" aria-hidden="true"><path d="M4 7l5 5 5-5"/></svg>
+        </button></h2>
+        <div class="acc-body" id="b-season" hidden>
+          <div class="tiles" id="tiles"></div>
+          <div class="controls">
+            <div class="seg small" role="group" aria-label="Measure" id="metricSeg">
+              <button type="button" data-v="swe" aria-pressed="true">Snowpack</button>
+              <button type="button" data-v="prec" aria-pressed="false">Precipitation</button>
+            </div>
+            <div class="seg small" role="group" aria-label="Time range" id="zoomSeg">
+              <button type="button" data-v="near" aria-pressed="true">Now + forecast</button>
+              <button type="button" data-v="early" aria-pressed="false">Oct–Jan</button>
+              <button type="button" data-v="full" aria-pressed="false">Full season</button>
+            </div>
+          </div>
+          <p class="chartttl" id="seChartTitle"></p>
+          <div class="legend" aria-hidden="true">
+            <span><span class="lg-line" style="border-color:var(--accent)"></span>This season</span>
+            <span><span class="lg-line" style="border-color:var(--accent);border-top-style:dotted"></span>Next 10 days (shaded: likely range)</span>
+            <span><span class="lg-line" style="border-color:var(--median);border-top-style:dashed"></span>Normal (1991–2020 median)</span>
+            <span><span class="lg-line" style="border-color:var(--violet)"></span>2022–23 (record year)</span>
+          </div>
+          <div class="chart" id="seasonChart"></div>
+          <p class="note" id="seNote"></p>
+        </div>
+      </section>
+
+      <section class="card acc method" id="sec-method">
+        <h2><button type="button" class="acc-btn" aria-expanded="false" aria-controls="b-method">
+          <span><span class="acc-k">Reference</span><span class="acc-t">How to read this, and the method</span></span>
+          <span></span>
+          <svg class="chev" viewBox="0 0 18 18" aria-hidden="true"><path d="M4 7l5 5 5-5"/></svg>
+        </button></h2>
+        <div class="acc-body" id="b-method" hidden>
+          <ul>
+            <li><b>Water vs snow.</b> Forecast snow amounts on this page are inches of snow. The longer-range and season sections use inches of <i>water</i>, because that is what the SNOTEL station measures and what long-range models forecast. 1″ of water ≈ 10–15″ of snow, depending on how cold it is.</li>
+            <li><b>Chance</b> = share of 154 forecasts (51 ECMWF, 51 ECMWF AI, 31 GFS ensemble, 21 Canada GEM, via Open-Meteo) that show at least that much snow. <b>Typical</b> is the middle forecast; <b>high end</b> (“up to”) is the 1-in-10 big outcome; the <b>likely range</b> runs from the 1-in-10 low to the 1-in-10 high.</li>
+            <li><b>Confidence</b> on the first card combines how far out the storm is and how much the four models disagree on amount and timing.</li>
+            <li>Snow is computed from each forecast’s water, using temperature to set how fluffy it is (5–13 inches of snow per inch of water; above freezing it counts as rain).</li>
+            <li>Summit water is scaled up to correct the models’ measured dry bias at Thaynes Canyon last season.</li>
+            <li>“Town” is a point near the resort base (7,000 ft), not a specific house. Snow varies a lot street to street.</li>
+            <li>Forecasts 8–10 days out catch big storms only about half to two-thirds of the time. Treat the back half as a heads-up, not a promise.</li>
+            <li>Snowpack is measured by the Thaynes Canyon SNOTEL (9,260 ft, on Park City Mountain). It weighs the water in the snow, not new snowfall. The 4-week outlook uses the 31-member GFS ensemble (35-day runs) at the same station.</li>
+            <li>Refreshes twice daily, about 5:45am and 2:45pm MT.</li>
+            <li>Sources: <a href="https://open-meteo.com">Open-Meteo</a> ensemble forecasts; <a href="https://wcc.sc.egov.usda.gov/nwcc/site?sitenum=814">NRCS Thaynes Canyon SNOTEL #814</a>; <a href="https://www.cpc.ncep.noaa.gov/">NOAA Climate Prediction Center</a> outlooks.</li>
+          </ul>
+        </div>
+      </section>
+    </div>
+    <p class="footer">Forecasts: Open-Meteo ensembles · Snowpack: NRCS SNOTEL · Outlooks: NOAA CPC</p>
+  </div>
+</main>
+<div class="tip" id="tip" role="tooltip" aria-hidden="true"></div>
+
+<script>
+(function(){
+'use strict';
+var D=null, site='summit', metric='swe', zoom='near';
+var $=function(id){return document.getElementById(id)};
+var NS='http://www.w3.org/2000/svg';
+
+function nb(t){return String(t).replace(/″\+/g,'″\u2060+')}
+function el(tag,cls,text){var e=document.createElement(tag);if(cls)e.className=cls;if(text!=null)e.textContent=nb(text);return e}
+function sv(tag,attrs,text){var e=document.createElementNS(NS,tag);for(var k in attrs)e.setAttribute(k,attrs[k]);if(text!=null)e.textContent=text;return e}
+function clear(n){while(n.firstChild)n.removeChild(n.firstChild)}
+function inch(v){if(v==null)return '–';if(v<0.05)return '0″';if(v<1)return v.toFixed(1)+'″';if(v<10)return (Math.round(v*2)/2).toString()+'″';return Math.round(v)+'″'}
+function inchN(v){return inch(v).replace('″','')}
+var DOW={Sun:'Sunday',Mon:'Monday',Tue:'Tuesday',Wed:'Wednesday',Thu:'Thursday',Fri:'Friday',Sat:'Saturday'};
+function cssv(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim()}
+function isOpen(id){var b=$('b-'+id);return b&&!b.hidden}
+
+/* ---------- storage (optional) ---------- */
+function lsGet(k){try{return localStorage.getItem(k)}catch(e){return null}}
+function lsSet(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+var s0=lsGet('pcsnow-site');if(s0==='town'||s0==='summit')site=s0;
+
+/* ---------- tooltip ---------- */
+var tip=$('tip'), tipOwner=null;
+function showTip(lines,x,y,owner){
+  clear(tip);
+  lines.forEach(function(l,i){
+    var row=el(i===0?'b':'div');
+    if(l.sw){var s=el('span','sw');s.style.background=l.sw;if(l.dash)s.style.background='repeating-linear-gradient(90deg,'+l.sw+' 0 3px,transparent 3px 5px)';row.appendChild(s)}
+    row.appendChild(document.createTextNode(l.t||l));
+    tip.appendChild(row);
+  });
+  tip.classList.add('on');tip.setAttribute('aria-hidden','false');tipOwner=owner||null;
+  var r=tip.getBoundingClientRect(),vw=window.innerWidth;
+  var left=Math.min(Math.max(8,x-r.width/2),vw-r.width-8);
+  var top=y-r.height-14; if(top<64)top=y+18;
+  tip.style.left=left+'px';tip.style.top=top+'px';
+}
+function hideTip(){tip.classList.remove('on');tip.setAttribute('aria-hidden','true');tipOwner=null}
+window.addEventListener('scroll',hideTip,{passive:true});
+document.addEventListener('pointerdown',function(e){if(tipOwner&&!tipOwner.contains(e.target))hideTip()});
+function bindTip(node,linesFn){
+  node.addEventListener('pointerenter',function(e){if(e.pointerType==='mouse'){var p=pos(node,e);showTip(linesFn(),p.x,p.y,node)}});
+  node.addEventListener('pointermove',function(e){if(e.pointerType==='mouse'){var p=pos(node,e);showTip(linesFn(),p.x,p.y,node)}});
+  node.addEventListener('pointerleave',function(e){if(e.pointerType==='mouse')hideTip()});
+  node.addEventListener('click',function(e){var p=pos(node,e);if(tipOwner===node){hideTip()}else showTip(linesFn(),p.x,p.y,node)});
+}
+function pos(node,e){var r=node.getBoundingClientRect();return {x:e.clientX||r.left+r.width/2,y:r.top}}
+
+/* ---------- disclosure sections ---------- */
+var SECS=['days','storm','models','long','season','method'];
+var openState={};
+try{openState=JSON.parse(lsGet('pcsnow-open-v5')||'{}')||{}}catch(e){openState={}}
+function defaultOpen(id){
+  if(window.innerWidth>=960)return id==='days'||id==='storm'||id==='models';
+  return false;
+}
+function setOpen(id,open,persist){
+  var body=$('b-'+id),btn=document.querySelector('[aria-controls="b-'+id+'"]');if(!body||!btn)return;
+  body.hidden=!open;btn.setAttribute('aria-expanded',open?'true':'false');
+  if(persist){openState[id]=open;lsSet('pcsnow-open-v5',JSON.stringify(openState))}
+  if(open&&D)drawCharts(id);
+  syncAllBtn();
+}
+function drawCharts(id){
+  if(id==='storm')drawStorm(F());
+  if(id==='season')renderSeasonChart();
+}
+function syncAllBtn(){
+  var all=SECS.every(function(id){return isOpen(id)});
+  $('toggleAll').textContent=all?'Collapse all':'Expand all';
+  $('toggleAll').setAttribute('aria-label',all?'Collapse all sections':'Expand all sections');
+}
+SECS.forEach(function(id){
+  var btn=document.querySelector('[aria-controls="b-'+id+'"]');
+  btn.addEventListener('click',function(){hideTip();setOpen(id,!isOpen(id),true)});
+  setOpen(id,openState.hasOwnProperty(id)?!!openState[id]:defaultOpen(id),false);
+});
+$('toggleAll').addEventListener('click',function(){
+  var all=SECS.every(function(id){return isOpen(id)});
+  SECS.forEach(function(id){setOpen(id,!all,true)});
+});
+
+/* ---------- load ---------- */
+function load(){
+  $('loading').hidden=false;$('error').hidden=true;$('app').hidden=true;
+  fetch('data.json',{cache:'no-cache'}).then(function(r){if(!r.ok)throw new Error(r.status);return r.json()})
+  .then(function(d){
+    if(!d||!d.forecast||!d.forecast.summit)throw new Error('bad data');
+    D=d;$('loading').hidden=true;$('app').hidden=false;renderAll();
+  }).catch(function(e){ if(window.console)console.warn(e); $('loading').hidden=true;$('error').hidden=false; });
+}
+$('retry').addEventListener('click',load);
+
+/* ---------- controls ---------- */
+function bindSeg(id,cb){
+  var seg=$(id);
+  seg.addEventListener('click',function(e){
+    var b=e.target.closest('button');if(!b)return;
+    [].forEach.call(seg.querySelectorAll('button'),function(x){x.setAttribute('aria-pressed',x===b?'true':'false')});
+    cb(b.dataset.site||b.dataset.v);
+  });
+}
+function syncSeg(id,val){[].forEach.call($(id).querySelectorAll('button'),function(x){x.setAttribute('aria-pressed',(x.dataset.site||x.dataset.v)===val?'true':'false')})}
+bindSeg('siteSeg',function(v){site=v;lsSet('pcsnow-site',v);hideTip();if(D)renderForecast()});
+bindSeg('metricSeg',function(v){metric=v;hideTip();if(D)renderSeasonBody()});
+bindSeg('zoomSeg',function(v){zoom=v;hideTip();if(D)renderSeasonChart()});
+
+/* ---------- helpers on data ---------- */
+function F(){return D.forecast[site]}
+function stormIdx(f){var sd=D.forecast.summit.storm.day;for(var i=0;i<f.days.length;i++)if(f.days[i].iso===sd)return i;return -1}
+function siteName(){return site==='summit'?'Summit':'Town'}
+function siteLong(s){s=s||site;return s==='summit'?'the summit (9,715 ft)':'town (7,000 ft)'}
+function membersFor(models){var m=D.method&&D.method.members||{};return models.reduce(function(a,k){return a+(m[k]||0)},0)}
+function fmtRangeDate(iso){var d=new Date(iso+'T12:00:00');return d.toLocaleDateString('en-US',{month:'short',day:'numeric'})}
+function shortRange(lbl){var m=/^([A-Za-z]+) (\d+)–([A-Za-z]+) (\d+)$/.exec(lbl||'');return m&&m[1]===m[3]?m[1]+' '+m[2]+'–'+m[4]:lbl}
+function fmtW(v){return v==null?'–':(v<1?v.toFixed(2):v.toFixed(1))+'″'}
+function fmtIn(v){return v==null?'–':(v<1?String(v.toFixed(2)).replace(/^0/,''):v.toFixed(1))+'″'}
+function chanceLevel(p){return p>=60?3:p>=35?2:p>=15?1:0}
+
+function storyFor(f){
+  var days=f.days,si=stormIdx(f); if(si<0)si=0;
+  var a=si,b=si,T=35;
+  while(a>0&&days[a-1].p['1']>=T)a--;
+  while(b<days.length-1&&days[b+1].p['1']>=T)b++;
+  var sp=days[si].p['1'];
+  var kind=sp>=60?'a storm':sp>=35?'snow':'a small chance of snow';
+  var when=a===b?'on '+DOW[days[a].dow]:days[a].dow+'–'+days[b].dow;
+  var pre='';
+  if(a>0){
+    var mx=0;for(var i=0;i<a;i++)mx=Math.max(mx,days[i].p['1']);
+    var word=mx<15?'Dry':mx<35?'Mostly quiet':'Unsettled';
+    pre=word+(a>=5?' week':(a===1?' tomorrow':' for '+a+' days'))+', then ';
+  }
+  var maxP=Math.max.apply(null,days.map(function(d){return d.p['1']}));
+  var likeliest=days[si].p['1']>=maxP;
+  var s1=(pre?pre+kind:kind.charAt(0).toUpperCase()+kind.slice(1))+' '+when+'.';
+  return {s1:s1,si:si,a:a,b:b,kind:kind,when:when,likeliest:likeliest,inWindow:sp>=T};
+}
+function modelStats(f){
+  var bm=f.total.by_model||{},names=Object.keys(bm);
+  var vals=names.map(function(n){return bm[n]});
+  var mx=vals.length?Math.max.apply(null,vals):0,mn=vals.length?Math.min.apply(null,vals):0;
+  var peaks=names.map(function(n){var bi=-1,bv=-1;f.days.forEach(function(d,i){var v=d.by_model[n];if(v!=null&&v>bv){bv=v;bi=i}});return bi});
+  var span=peaks.length?Math.max.apply(null,peaks)-Math.min.apply(null,peaks):0;
+  return {names:names,bm:bm,mx:mx,mn:mn,timingAgree:span<=2,ratio:mx/Math.max(mn,0.5)};
+}
+function confidence(f){
+  var st=storyFor(f),lead=st.si+1,ms=modelStats(f);
+  var lvl=lead<=3?3:lead<=6?2:1;
+  if(ms.ratio>1.6)lvl--; if(ms.ratio>2.5)lvl--; if(!ms.timingAgree)lvl--;
+  lvl=Math.max(1,Math.min(3,lvl));
+  var leadTxt=lead<=1?'the '+(st.inWindow?'storm':'best chance')+' is tomorrow':'the '+(st.inWindow?'storm':'best chance')+' is '+lead+' days out';
+  var mTxt=ms.names.length>1?('the models '+(ms.timingAgree?'agree on timing':'differ on timing')+' but '+(ms.ratio>1.6?'range from '+inch(ms.mn)+' to '+inch(ms.mx)+' on the total':'roughly agree on amount')):'';
+  if(ms.names.length>1&&ms.ratio<=1.6&&ms.timingAgree)mTxt='the models agree on timing and amount';
+  if(ms.names.length>1&&ms.ratio<=1.6&&!ms.timingAgree)mTxt='the models differ on timing but roughly agree on amount';
+  return {lvl:lvl,word:['','Low','Medium','High'][lvl],why:leadTxt+(mTxt?', and '+mTxt:'')+'.'};
+}
+
+/* ---------- mini visuals (summary rows) ---------- */
+function miniBars(vals,max,hi,ref){
+  var w=84,h=30,n=vals.length,g=2,bw=(w-g*(n-1))/n,s=sv('svg',{width:'100%',height:h,viewBox:'0 0 '+w+' '+h,preserveAspectRatio:'none'});
+  vals.forEach(function(v,i){var bh=Math.max(2,(h-2)*Math.min(1,(v||0)/(max||1)));s.appendChild(sv('rect',{x:i*(bw+g),y:h-bh,width:bw,height:bh,rx:1.5,fill:(hi&&hi(i,v))?'var(--accent)':'var(--p1)'}))});
+  if(ref!=null){var y=h-(h-2)*ref/max;s.appendChild(sv('line',{x1:0,x2:w,y1:y,y2:y,stroke:'var(--text2)','stroke-width':1,'stroke-dasharray':'2 2'}))}
+  s.appendChild(sv('line',{x1:0,x2:w,y1:h-.5,y2:h-.5,stroke:'var(--line)'}));
+  return s;
+}
+function setViz(id,node){var b=$('vz-'+id);clear(b);b.appendChild(node)}
+
+/* ---------- render ---------- */
+function renderAll(){
+  syncSeg('siteSeg',site);
+  $('updated').textContent='Updated '+D.updated_label;
+  renderForecast();renderSeasonBody();renderLong();
+}
+function renderForecast(){
+  var f=F();
+  $('hdrSub').textContent=siteName()+' · 10-day outlook';
+  $('g1sub').textContent=(site==='summit'?'Summit, 9,715 ft':'Town, 7,000 ft')+' · follows the Summit/Town switch';
+  renderGlance(f);renderDays(f);renderStorm(f);renderModels(f);
+}
+
+/* ---------- glance ---------- */
+function renderGlance(f){
+  var st=storyFor(f),h=$('vh');clear(h);
+  var parts=st.s1,i=parts.lastIndexOf(st.when);
+  if(i>=0){h.appendChild(document.createTextNode(parts.slice(0,i)));h.appendChild(el('span','hl',st.when));h.appendChild(document.createTextNode(parts.slice(i+st.when.length)))}
+  else h.appendChild(document.createTextNode(parts));
+  var sd=f.days[st.si];
+  $('vSub').textContent=nb((st.likeliest?'Likeliest':'Biggest')+' day: '+DOW[sd.dow]+', '+sd.label.split(' ').slice(1).join(' ')+' ('+sd.p['1']+'% chance of 1″+ at '+(site==='summit'?'the summit':'town')+').');
+  $('gDates').textContent=fmtRangeDate(f.total.start)+' – '+fmtRangeDate(f.total.end);
+  // totals: both sites
+  var tb=$('totals');clear(tb);
+  ['summit','town'].forEach(function(s){
+    var t=D.forecast[s]&&D.forecast[s].total;if(!t)return;
+    var d=el('div','tot'+(s===site?' sel':''));
+    var k=el('div','tk');k.appendChild(el('span',null,s==='summit'?'Summit':'Town'));k.appendChild(el('em',null,s==='summit'?'9,715 ft':'7,000 ft'));d.appendChild(k);
+    d.appendChild(el('div','tv',t.p50+'″'));
+    d.appendChild(el('div','tr','likely '+t.p10+'–'+t.p90+'″'));
+    d.setAttribute('aria-label',(s==='summit'?'Summit':'Town')+': most likely '+t.p50+' inches over 10 days, likely range '+t.p10+' to '+t.p90);
+    tb.appendChild(d);
+  });
+  // confidence
+  var c=confidence(f),cb=$('conf');clear(cb);
+  var pp=el('div','pips');pp.setAttribute('aria-hidden','true');for(var k=1;k<=3;k++)pp.appendChild(el('i',k<=c.lvl?'on':null));cb.appendChild(pp);
+  var p=el('p');p.appendChild(el('b',null,c.word+' confidence: '));p.appendChild(document.createTextNode(c.why.charAt(0).toUpperCase()+c.why.slice(1)));cb.appendChild(p);
+  // 10-day strip
+  $('stripSite').textContent=siteName();
+  var box=$('strip10');clear(box);
+  var g=el('div','days10');
+  f.days.forEach(function(d,i){
+    var c=el('div','sc'+(i===st.si?' pk':''));
+    c.appendChild(el('span','dw',d.dow));c.appendChild(el('span','dd',String(d.dom)));
+    c.appendChild(el('div','bx v'+chanceLevel(d.p['1']),d.p['1']+'%'));
+    var a=d.p50>=0.5;c.appendChild(el('span','am',a?inchN(d.p50):'\u00a0'));
+    g.appendChild(c);
+  });
+  box.appendChild(g);
+  if(st.inWindow){var br=el('div','brk'),sp=el('span',null,st.kind==='a storm'?'storm':'snow');sp.style.gridColumn=(st.a+1)+' / '+(st.b+2);br.appendChild(sp);box.appendChild(br)}
+  box.setAttribute('aria-label','Chance of 1 inch or more each day at '+siteLong()+': '+f.days.map(function(d){return d.dow+' '+d.dom+' '+d.p['1']+'%'+(d.p50>=0.5?', typical '+inch(d.p50):'')}).join('; '));
+}
+
+/* ---------- day by day ---------- */
+function dayTip(d,isStorm){
+  var L=[{t:d.label+(isStorm?' · storm day':'')},
+    'Chance of 1″+: '+d.p['1']+'%','Chance of 3″+: '+d.p['3']+'%','Chance of 6″+: '+d.p['6']+'%',
+    'Typical '+inch(d.p50)+' · high end '+inch(d.p90)];
+  if(d.models.indexOf('GFS ensemble')<0)L.push('† Based on '+d.models.length+' models');
+  return L;
+}
+function typ(d){return d.p90<0.1?{b:'—',s:'dry',z:true}:{b:d.p50<0.05?'0″':inch(d.p50),s:'up to '+inch(d.p90),z:d.p50<0.05}}
+function renderDays(f){
+  var st=storyFor(f),ul=$('days');clear(ul);
+  var sd=f.days[st.si],t=f.total;
+  var win=st.inWindow&&st.a<st.b?'Snow likely '+f.days[st.a].dow+'–'+f.days[st.b].dow+'; ':'';
+  $('dh').textContent=nb(st.inWindow?win+(win?'peak ':'Peak ')+sd.dow+' '+sd.dom+': typical '+inch(sd.p50)+', up to '+inch(sd.p90)+'.':'No snowy day stands out; best chance '+sd.dow+' '+sd.dom+' ('+sd.p['1']+'% for 1″+).');
+  setViz('days',miniBars(f.days.map(function(d){return d.p['1']}),100,function(i){return i===st.si}));
+  // total odds
+  $('oddsTitle').textContent='Odds for the 10-day total at '+(site==='summit'?'the summit':'town');
+  var ob=$('odds');clear(ob);
+  ['3','6','12','18','24'].forEach(function(k){
+    if(t.p[k]==null)return;
+    var r=el('div','odd');r.appendChild(el('span','ol',k+'″+'));
+    var b=el('div','ob'),i=el('i');i.style.width=t.p[k]+'%';b.appendChild(i);r.appendChild(b);
+    r.appendChild(el('span','ov',t.p[k]+'%'));
+    r.setAttribute('role','img');r.setAttribute('aria-label',t.p[k]+'% chance of '+k+' inches or more over 10 days');
+    ob.appendChild(r);
+  });
+  $('oddsNote').textContent='Most likely '+t.p50+'″. A 1-in-10 chance of less than '+t.p10+'″, and a 1-in-10 chance of more than '+t.p90+'″.';
+  var missing=false;
+  f.days.forEach(function(d,i){
+    var li=el('li');if(i===st.si)li.className='storm';
+    var b=el('button','dayrow');b.type='button';b.setAttribute('aria-expanded','false');
+    var r=el('div','r');
+    var nm=el('div','dname');nm.appendChild(document.createTextNode(d.dow));
+    var noG=d.models.indexOf('GFS ensemble')<0;if(noG){missing=true;nm.appendChild(el('sup',null,'†'))}
+    nm.appendChild(el('small',null,d.label.split(' ').slice(1).join(' ')));
+    if(i===st.si)nm.appendChild(el('span','tag',st.inWindow?'PEAK':'BEST'));
+    var pw=el('div','pwrap'),pb=el('div','pbar');
+    ['1','3','6'].forEach(function(k){var x=el('i','b'+k);x.style.width=d.p[k]+'%';pb.appendChild(x)});
+    pw.appendChild(pb);pw.appendChild(el('span','pct'+(d.p['1']<15?' low':''),d.p['1']+'%'));
+    var am=el('div','amt'),ty=typ(d);
+    am.appendChild(el('b',ty.z?'z':null,ty.b));am.appendChild(el('small',null,ty.s));
+    r.appendChild(nm);r.appendChild(pw);r.appendChild(am);b.appendChild(r);
+    var more=el('div','more');
+    more.appendChild(el('span',null,'1″+ '+d.p['1']+'%'));more.appendChild(el('span',null,'3″+ '+d.p['3']+'%'));more.appendChild(el('span',null,'6″+ '+d.p['6']+'%'));
+    more.appendChild(el('span',null,'12″+ '+d.p['12']+'%'));
+    if(noG)more.appendChild(el('span',null,'† '+d.models.length+' models'));
+    b.appendChild(more);
+    b.setAttribute('aria-label',d.label+': '+d.p['1']+'% chance of 1 inch or more, typical '+inch(d.p50)+', high end '+inch(d.p90)+'. Show more odds');
+    b.addEventListener('click',function(){b.setAttribute('aria-expanded',b.getAttribute('aria-expanded')==='true'?'false':'true')});
+    li.appendChild(b);ul.appendChild(li);
+  });
+  var dc=$('dcols');clear(dc);
+  f.days.forEach(function(d,i){
+    var c=el('button','dcol'+(i===st.si?' storm':''));c.type='button';
+    c.appendChild(el('div','ptop'+(d.p['1']<15?' low':''),d.p['1']+'%'));
+    var vb=el('div','vbar');['1','3','6'].forEach(function(k){var x=el('i','b'+k);x.style.height=d.p[k]+'%';vb.appendChild(x)});c.appendChild(vb);
+    var dd=el('div','dd');dd.appendChild(document.createTextNode(d.dow+(d.models.indexOf('GFS ensemble')<0?'†':'')));dd.appendChild(el('small',null,d.label.split(' ').slice(1).join(' ')));c.appendChild(dd);
+    var dv=el('div','dv'),ty=typ(d);
+    dv.appendChild(el('b',ty.z?'z':null,ty.b));dv.appendChild(el('div',null,ty.s));
+    c.appendChild(dv);
+    if(i===st.si)c.appendChild(el('span','tag',st.inWindow?'PEAK':'BEST'));
+    c.setAttribute('aria-label',d.label+': '+d.p['1']+'% chance of 1 inch or more, typical '+inch(d.p50)+', high end '+inch(d.p90));
+    bindTip(c,function(){return dayTip(d,i===st.si)});
+    dc.appendChild(c);
+  });
+  var foot='Typical = middle forecast; “up to” = 1-in-10 high end. Tap a day for more odds.';
+  if(missing){var md=f.days.filter(function(d){return d.models.indexOf('GFS ensemble')<0})[0];foot+=' † GFS ensemble doesn’t reach this far, so this day uses '+md.models.length+' models ('+membersFor(md.models)+' forecasts).'}
+  $('dFoot').textContent=foot;
+}
+
+/* ---------- storm timing ---------- */
+function blockRange(bl,i,j){var a=bl[i].label.split('–')[0],b=bl[j].label.split('–')[1];return a+'–'+b.replace(/^.* /,'')}
+function stormInfo(bl){
+  var mi=0;bl.forEach(function(b,i){if(b.mean>bl[mi].mean)mi=i});
+  var i0=mi,i1=mi,thr=bl[mi].mean*0.9;
+  if(mi>0&&bl[mi-1].mean>=thr)i0=mi-1; if(mi<bl.length-1&&bl[mi+1].mean>=thr)i1=mi+1;
+  return {i0:i0,i1:i1,hv:blockRange(bl,i0,i1),tot:bl.reduce(function(a,b){return a+b.mean},0)};
+}
+function renderStorm(f){
+  var st=f.storm,bl=st.blocks;
+  var sdd=f.days[stormIdx(f)];$('sEyebrow').textContent='Storm timing · '+(sdd?sdd.label:st.label);
+  if(!bl||!bl.length){$('sh').textContent='No storm timing available.';clear($('stripBox'));clear($('vz-storm'));return}
+  var si=stormInfo(bl);
+  $('sh').textContent='Heaviest '+si.hv+'; about '+inch(si.tot)+' over 36 hours.';
+  setViz('storm',miniBars(bl.map(function(b){return b.mean}),Math.max.apply(null,bl.map(function(b){return b.mean}))||1,function(i){return i>=si.i0&&i<=si.i1}));
+  $('sSub').textContent='3-hour windows from 6pm the evening before to 6am the day after, at '+siteLong()+'. Tap a window for details.';
+  var co=$('sCallouts');clear(co);
+  var p1=el('p','callout');p1.appendChild(document.createTextNode('Busiest stretch: '));p1.appendChild(el('b',null,si.hv));
+  p1.appendChild(document.createTextNode(', roughly '+inch((bl[si.i0].mean+bl[si.i1].mean)/2)+' per 3 hours with a '+Math.max(bl[si.i0].p,bl[si.i1].p)+'% chance of ¼″+ in each window.'));
+  co.appendChild(p1);
+  if(site==='town'){
+    var ri=0;bl.forEach(function(b,i){if(b.rain>bl[ri].rain)ri=i});
+    var p2=el('p','callout rainnote');
+    if(bl[ri].rain>=10){p2.appendChild(document.createTextNode('Rain risk peaks '));p2.appendChild(el('b',null,bl[ri].label));p2.appendChild(document.createTextNode(' at '+bl[ri].rain+'%, so early snow in town may be wet or mixed.'))}
+    else p2.appendChild(document.createTextNode('Low rain risk in town: it should fall as snow.'));
+    co.appendChild(p2);
+  }
+  drawStorm(f);
+}
+function drawStorm(f){
+  var st=f.storm,bl=st.blocks,box=$('stripBox');
+  if(!bl||!bl.length)return;
+  var W=box.clientWidth;
+  if(!W)return; // hidden: drawn when the section opens
+  clear(box);
+  var sd=f.days[stormIdx(f)]||f.days[0];
+  var si=stormInfo(bl),i0=si.i0,i1=si.i1;
+  var n=bl.length, wide=W>=520;
+  var gL=wide?80:0, cw=(W-gL)/n, y0=22, cellH=wide?52:44, barTop=y0+cellH+(wide?24:8), barH=wide?84:56, tickY=barTop+barH+18;
+  var hasRain=site==='town'&&bl.some(function(b){return b.rain>=5});
+  var rainY=tickY+12, rainH=hasRain?30:0, H=rainY+(hasRain?rainH+4:-6);
+  var svg=sv('svg',{viewBox:'0 0 '+W+' '+H,width:W,height:H,role:'img','aria-label':'Storm timing: '+bl.map(function(b){return b.label+' '+b.p+'% chance, average '+b.mean+' inches'+(site==='town'?', '+b.rain+'% rain':'')}).join('; ')});
+  var acc=cssv('--accent'),onAcc=cssv('--on-accent'),txt=cssv('--text'),dark=matchMedia('(prefers-color-scheme: dark)').matches;
+  var groups=[];bl.forEach(function(b,i){var d=b.label.split(' ')[0];if(!groups.length||groups[groups.length-1].d!==d)groups.push({d:d,a:i,b:i});else groups[groups.length-1].b=i});
+  groups.forEach(function(g,gi){
+    var x1=gL+g.a*cw+2,x2=gL+(g.b+1)*cw-2;
+    var name=g.d===sd.dow?(wide?DOW[g.d]:g.d):(gi===0?(g.d+' eve'):(g.d+' early'));
+    if(g.b-g.a<1)name=g.d;
+    svg.appendChild(sv('line',{x1:x1,x2:x2,y1:y0-6,y2:y0-6,stroke:cssv('--line'),'stroke-width':2}));
+    svg.appendChild(sv('text',{x:(x1+x2)/2,y:y0-10,'text-anchor':'middle','font-weight':'600',style:'fill:var(--text)'},name));
+  });
+  if(wide){
+    svg.appendChild(sv('text',{x:0,y:y0+cellH/2+5},'Chance'));
+    svg.appendChild(sv('text',{x:0,y:barTop+barH/2+5},'Avg snow'));
+    if(hasRain)svg.appendChild(sv('text',{x:0,y:rainY+rainH/2+5},'Rain risk'));
+  }
+  var maxM=Math.max.apply(null,bl.map(function(b){return b.mean}))||1;
+  var scaleM=Math.max(maxM,0.4);
+  function tipLines(b){var L=[{t:b.label},'Chance of ¼″+: '+b.p+'%','Average snow: '+b.mean.toFixed(2)+'″'];if(site==='town')L.push('Chance it falls as rain: '+b.rain+'%');return L}
+  bl.forEach(function(b,i){
+    var x=gL+i*cw, g=sv('g',{class:'cell',tabindex:'0','aria-label':b.label+': '+b.p+'% chance of a quarter inch or more'});
+    var op=0.06+0.9*b.p/100;
+    g.appendChild(sv('rect',{x:x+1,y:y0,width:cw-2,height:cellH,rx:6,fill:acc,'fill-opacity':op.toFixed(2)}));
+    if(i>=i0&&i<=i1)g.appendChild(sv('rect',{x:x+1,y:y0,width:cw-2,height:cellH,rx:6,fill:'none',stroke:txt,'stroke-width':2}));
+    var light=dark?op<0.62:op<0.7;
+    g.appendChild(sv('text',{x:x+cw/2,y:y0+cellH/2+5,'text-anchor':'middle','font-weight':'700',style:'fill:'+(light?txt:onAcc)},cw>=52?b.p+'%':String(b.p)));
+    var bh=Math.max(2,barH*b.mean/scaleM);
+    g.appendChild(sv('rect',{x:x+cw*0.2,y:barTop+barH-bh,width:cw*0.6,height:bh,rx:3,fill:'var(--p3)'}));
+    if(wide)g.appendChild(sv('text',{x:x+cw/2,y:barTop+barH-bh-5,'text-anchor':'middle',style:'fill:var(--text2)'},inchN(b.mean)));
+    if(hasRain){
+      var ro=Math.min(1,b.rain/40);
+      g.appendChild(sv('rect',{x:x+1,y:rainY,width:cw-2,height:rainH,rx:6,fill:'var(--warm-fill)','fill-opacity':(0.05+0.55*ro).toFixed(2)}));
+      g.appendChild(sv('text',{x:x+cw/2,y:rainY+rainH/2+5,'text-anchor':'middle','font-weight':'600',style:'fill:var(--warm)'},String(b.rain)));
+    }
+    g.appendChild(sv('rect',{x:x,y:0,width:cw,height:H,fill:'transparent'}));
+    bindTip(g,function(){return tipLines(b)});
+    g.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();var r=g.getBoundingClientRect();showTip(tipLines(b),r.left+r.width/2,r.top,g)}});
+    svg.appendChild(g);
+  });
+  svg.appendChild(sv('line',{x1:gL,x2:W,y1:barTop+barH+.5,y2:barTop+barH+.5,stroke:cssv('--line')}));
+  var step=cw<56?2:1;
+  for(var k=0;k<=n;k+=step){
+    var hr=k<n?bl[k].label.split(' ')[1].split('–')[0]:bl[n-1].label.split('–')[1];
+    hr=hr.replace('am','a').replace('pm','p');if(cw>=56)hr=hr.replace(/a$/,'am').replace(/p$/,'pm');
+    var tx=gL+k*cw, anchor=k===0?'start':(k===n?'end':'middle');
+    svg.appendChild(sv('text',{x:tx,y:tickY,'text-anchor':anchor},hr));
+  }
+  box.appendChild(svg);
+  var lg=$('sLegend');clear(lg);
+  var a=el('span');var ai=el('i');ai.style.background=acc;a.appendChild(ai);a.appendChild(document.createTextNode((wide?'Top: ':'Boxes: ')+'chance of ¼″+ in that window (%)'));lg.appendChild(a);
+  var b2=el('span');var bi=el('i');bi.style.background='var(--p3)';b2.appendChild(bi);b2.appendChild(document.createTextNode('Bars: average snow (in)'));lg.appendChild(b2);
+  if(hasRain){var c=el('span');var ci=el('i');ci.style.background='var(--warm-fill)';c.appendChild(ci);c.appendChild(document.createTextNode('Bottom: chance it falls as rain (%)'));lg.appendChild(c)}
+}
+
+/* ---------- models ---------- */
+function renderModels(f){
+  var ms=modelStats(f),bm=ms.bm,names=ms.names,box=$('models');clear(box);
+  var mx=ms.mx,mn=ms.mn;
+  $('mh').textContent=(ms.timingAgree?'Agree on timing':'Differ on timing')+', '+(ms.ratio>1.6?'split on amount: ':'similar amounts: ')+inch(mn)+' to '+inch(mx)+'.';
+  // mini: dots on a 0..max line
+  var w=84,h=30,s=sv('svg',{width:'100%',height:h,viewBox:'0 0 '+w+' '+h,preserveAspectRatio:'none'}),X=function(v){return 4+(w-8)*v/(mx||1)};
+  s.appendChild(sv('line',{x1:4,x2:w-4,y1:h/2,y2:h/2,stroke:'var(--track)','stroke-width':6,'stroke-linecap':'round'}));
+  s.appendChild(sv('line',{x1:X(mn),x2:X(mx),y1:h/2,y2:h/2,stroke:'var(--p1)','stroke-width':6,'stroke-linecap':'round'}));
+  names.forEach(function(n){s.appendChild(sv('rect',{x:X(bm[n])-1.5,y:h/2-8,width:3,height:16,rx:1.5,fill:'var(--accent)'}))});
+  setViz('models',s);
+  var si=stormIdx(f);
+  var dmax=0;f.days.forEach(function(d){names.forEach(function(n){if(d.by_model[n]!=null)dmax=Math.max(dmax,d.by_model[n])})});
+  var cap=el('div','mcap');cap.appendChild(el('span',null,'10-day total'));box.appendChild(cap);
+  names.forEach(function(n){
+    var row=el('div','mrow');
+    var nm=el('div','mname',n);nm.appendChild(el('small',null,(D.method&&D.method.members[n]||'')+' forecasts'));
+    var tr=el('div','mtrack');
+    var line=el('div','mline');var bar=el('div','mbar');bar.style.width='calc((100% - 56px) * '+(bm[n]/(mx||1)).toFixed(3)+')';line.appendChild(bar);line.appendChild(el('span','mval',inch(bm[n])));tr.appendChild(line);
+    var sp=el('div','spark');sp.setAttribute('aria-hidden','true');
+    f.days.forEach(function(d,i){var v=d.by_model[n];var x=el('i',i===si?'s':null);x.style.height=(v==null?0:Math.max(6,100*v/(dmax||1)))+'%';if(v==null)x.style.background='transparent';sp.appendChild(x)});
+    tr.appendChild(sp);
+    row.appendChild(nm);row.appendChild(tr);
+    row.setAttribute('role','group');row.setAttribute('aria-label',n+': '+bm[n]+' inches over 10 days');
+    bindTip(row,function(){var L=[{t:n+' · '+bm[n]+'″ total'}];f.days.forEach(function(d){if(d.by_model[n]!=null&&d.by_model[n]>=0.5)L.push(d.dow+' '+d.dom+': '+d.by_model[n]+'″')});if(L.length===1)L.push('Under ½″ every day');return L});
+    box.appendChild(row);
+  });
+  var sd=f.days[si];
+  box.appendChild(el('p','note','Small bars: each model’s daily snow, '+f.days[0].dow+' '+f.days[0].dom+' → '+f.days[f.days.length-1].dow+' '+f.days[f.days.length-1].dom+(sd?'; blue = '+sd.dow+' '+sd.dom+'.':'.')+' Tap a model for its daily numbers.'));
+}
+
+/* ---------- longer range ---------- */
+function renderLong(){
+  var L=D.longrange||{},W=L.weeks||[],box=$('weeks');clear(box);
+  var best=null;W.forEach(function(w){if(w.p_above!=null&&(best==null||w.p_above>best.p_above))best=w});
+  var c814=(L.cpc||[]).filter(function(o){return /8.14/.test(o.name)})[0];
+  var noaa=c814&&c814.precip?(c814.precip.cat==='Above'?' NOAA leans wet too.':c814.precip.cat==='Below'?' NOAA leans dry.':''):'';
+  $('lh').textContent=best&&best.p_above>=55?('Week of '+shortRange(best.label)+' looks wetter than normal ('+best.p_above+'%).'+noaa):(W.length?'No week looks clearly wetter than normal yet.'+noaa:'Longer-range outlook unavailable.');
+  setViz('long',miniBars(W.map(function(w){return w.p_above||0}),100,function(i,v){return v>=55},50));
+  var mx=0;W.forEach(function(w){mx=Math.max(mx,w.p90||0,w.normal||0)});mx=Math.max(0.5,Math.ceil(mx*2)/2);
+  var pct=function(v){return Math.max(0,Math.min(100,100*(v||0)/mx))+'%'};
+  W.forEach(function(w){
+    var r=el('div','wkrow');
+    if(w.week===3)box.appendChild(el('div','wksep','Weeks 3–4: low confidence'));
+    var wl=el('div','wl','Week '+w.week);wl.appendChild(el('small',null,shortRange(w.label)));r.appendChild(wl);
+    var mid=el('div');
+    var bar=el('div','wbar');
+    var rg=el('div','rng');rg.style.left=pct(w.p10);rg.style.width='calc('+pct(w.p90)+' - '+pct(w.p10)+')';bar.appendChild(rg);
+    if(w.normal!=null){var nn=el('div','nrm');nn.style.left=pct(w.normal);bar.appendChild(nn)}
+    var m=el('div','mid');m.style.left=pct(w.p50);bar.appendChild(m);
+    bar.setAttribute('role','img');bar.setAttribute('aria-label','Middle forecast '+w.p50+' inches of water, range '+w.p10+' to '+w.p90+', normal '+w.normal);
+    mid.appendChild(bar);
+    var ws=el('div','ws',fmtW(w.p50)+' vs '+fmtW(w.normal)+' normal');ws.appendChild(el('span','wsx',' (≈'+Math.round(w.p50*12)+'″ snow)'));mid.appendChild(ws);
+    r.appendChild(mid);
+    r.appendChild(el('div','wp'+(w.p_above>=55?' hi':w.p_above!=null&&w.p_above<25?' lo':''),w.p_above==null?'–':(w.p_above+'%')));
+    box.appendChild(r);
+  });
+  var sc=$('wscale');clear(sc);sc.appendChild(el('span'));var sd=el('div');sd.appendChild(el('span',null,'0″'));sd.appendChild(el('span',null,mx+'″ water'));sc.appendChild(sd);sc.appendChild(el('span'));
+  $('wkNote').textContent='Dark tick = middle forecast; shaded = 1-in-10 low to 1-in-10 high; black line = a normal week (1991–2020). Beyond about two weeks these odds are only slightly better than chance.';
+  var cb=$('cpc');clear(cb);
+  var band=function(p){var b=[33,40,50,60,70,80,90,100];for(var i=0;i<b.length-1;i++)if(p>=b[i]&&p<b[i+1])return b[i]+'–'+b[i+1]+'%';return p+'%'};
+  var short={'Wetter than normal':'Wetter','Drier than normal':'Drier','Warmer than normal':'Warmer','Colder than normal':'Colder','Near normal':'Near normal','No tilt (equal chances)':'No tilt'};
+  (L.cpc||[]).forEach(function(o){
+    var r=el('div','cpcrow');var cn=el('div','cn',o.name.replace(/ outlook$/,''));cn.appendChild(el('small',null,o.period));r.appendChild(cn);
+    var ps=el('div','pills');
+    [['Precip',o.precip,'prcp'],['Temp',o.temp,'temp']].forEach(function(x){
+      var v=x[1]||{cat:'EC',text:'No tilt (equal chances)'};
+      var cls=v.cat==='EC'?'ec':(x[2]==='prcp'?(v.cat==='Above'?'wet':v.cat==='Below'?'dry':''):(v.cat==='Above'?'warm':v.cat==='Below'?'cold':''));
+      var p=el('span','pill '+cls);p.appendChild(el('b',null,x[0]+': '));p.appendChild(document.createTextNode((short[v.text]||v.text)+(v.prob!=null?' ('+band(v.prob)+')':'')));
+      ps.appendChild(p);
+    });
+    r.appendChild(ps);cb.appendChild(r);
+  });
+}
+
+/* ---------- season ---------- */
+function renderSeasonBody(){
+  var s=D.season,t=s.today,isS=metric==='swe';
+  $('seEyebrow').textContent='This season · '+s.water_year;
+  var w=function(pct){return pct==null?'':pct>=115?'ahead of normal':pct>=90?'near normal':'behind normal'};
+  $('seh').textContent=(t.swe_pct!=null?'Snowpack is '+t.swe_pct+'% of normal for '+t.label+' ('+w(t.swe_pct)+')':'Snowpack: '+t.swe+'″ of water')+', '+(t.swe>=t.swe_2223?'ahead of':'behind')+' record 2022–23.';
+  // mini: this vs normal vs 2022-23 today
+  var vz=sv('svg',{width:'100%',height:30,viewBox:'0 0 84 30',preserveAspectRatio:'none'});
+  var mxv=Math.max(t.swe,t.swe_med,t.swe_2223)||1;
+  [['swe_med','var(--median)'],['swe','var(--accent)'],['swe_2223','var(--violet)']].forEach(function(k,i){var bh=Math.max(2,28*t[k[0]]/mxv);vz.appendChild(sv('rect',{x:6+i*27,y:30-bh,width:18,height:bh,rx:2,fill:k[1]}))});
+  vz.appendChild(sv('line',{x1:0,x2:84,y1:29.5,y2:29.5,stroke:'var(--line)'}));
+  setViz('season',vz);
+  var pct=isS?t.swe_pct:t.prec_pct,cur=isS?t.swe:t.prec,y23=isS?t.swe_2223:t.prec_2223;
+  $('seChartTitle').textContent=isS?'Snowpack: the water stored in the snow on the ground, the best single measure of the season so far.':'Precipitation since Oct 1 (rain + snow water): '+pct+'% of normal for '+t.label+', '+(cur>=y23?'ahead of':'behind')+' 2022–23.';
+  var tl=$('tiles');clear(tl);
+  function tile(big,lab,em){var d=el('div','tile');d.appendChild(el('b',null,big));d.appendChild(el('span',null,lab));if(em)d.appendChild(el('em',null,em));tl.appendChild(d)}
+  tile(t.swe+'″','water in the snowpack','Normal for '+t.label+': '+t.swe_med+'″');
+  tile(Math.round(100*t.swe/t.swe_2223)+'%','of 2022–23 on this date','2022–23: '+t.swe_2223+'″ water');
+  tile(t.depth!=null?t.depth+'″':'–','snow on the ground',t.depth_2223!=null?'2022–23 same day: '+t.depth_2223+'″':'');
+  tile(s.peaks.median.swe+'″','normal peak water ('+s.peaks.median.label+')','2022–23 peak: '+s.peaks.y2223.swe+'″ ('+s.peaks.y2223.label+')');
+  $('seNote').textContent=isS?'The shaded wedge is the 10-day forecast at this station (middle forecast dotted; 1-in-10 low and high at its edges), assuming no melt.':'Counts all water that fell (rain and snow). A wet October can run high even if little of it stuck as snow.';
+  renderSeasonChart();
+}
+function renderSeasonChart(){
+  var s=D.season,ser=s.series[metric],labels=s.series.labels,box=$('seasonChart');
+  var W=box.clientWidth;
+  if(!W)return; // hidden: drawn when the section opens
+  clear(box);
+  var mobile=W<520, H=mobile?250:320;
+  var end=zoom==='early'?Math.min(122,labels.length-1):labels.length-1, st=0;
+  var m={l:34,r:mobile?66:110,t:14,b:28}, pw=W-m.l-m.r, ph=H-m.t-m.b;
+  var keys=['median','y2223','this'];
+  var fc=(s.forecast&&s.forecast[metric])?s.forecast[metric]:null, f0=s.forecast?s.forecast.start_index:0;
+  if(fc&&zoom==='early')end=Math.max(end,Math.min(labels.length-1,f0+fc.p50.length-1));
+  if(zoom==='near'){var ti0=s.day_index;st=Math.max(0,ti0-30);end=Math.min(labels.length-1,ti0+(fc?fc.p50.length-1:0)+4);}
+  var ymax=0;keys.forEach(function(k){for(var i=st;i<=end&&i<ser[k].length;i++)if(ser[k][i]!=null)ymax=Math.max(ymax,ser[k][i])});
+  if(fc)fc.p90.forEach(function(v){if(v!=null)ymax=Math.max(ymax,v)});
+  ymax=ymax*1.05||1;var _st=niceStep(ymax/5);ymax=Math.ceil(ymax/_st)*_st;
+  var X=function(i){return m.l+pw*(i-st)/(end-st)},Y=function(v){return m.t+ph*(1-v/ymax)};
+  var svg=sv('svg',{viewBox:'0 0 '+W+' '+H,width:W,height:H,role:'img','aria-label':(metric==='swe'?'Snowpack':'Precipitation')+' chart: this season '+(metric==='swe'?s.today.swe:s.today.prec)+' inches today; normal '+(metric==='swe'?s.today.swe_med:s.today.prec_med)+'; 2022-23 '+(metric==='swe'?s.today.swe_2223:s.today.prec_2223)});
+  var ticks=niceTicks(ymax);
+  ticks.forEach(function(v){
+    svg.appendChild(sv('line',{x1:m.l,x2:m.l+pw,y1:Y(v),y2:Y(v),stroke:'var(--line)','stroke-width':1}));
+    svg.appendChild(sv('text',{x:m.l-6,y:Y(v)+4,'text-anchor':'end'},v+(v===ticks[ticks.length-1]?'″':'')));
+  });
+  var monthStep=(!mobile||zoom!=='full')?1:2,mc=0;
+  labels.forEach(function(l,i){if(i>end||i<st)return;if(zoom==='near'&&/ (1|8|15|22)$/.test(l)&&!/ 1$/.test(l)){svg.appendChild(sv('line',{x1:X(i),x2:X(i),y1:m.t+ph,y2:m.t+ph+4,stroke:'var(--median)'}));svg.appendChild(sv('text',{x:X(i),y:H-8,'text-anchor':i===st?'start':'middle'},(mobile&&i!==st)?l.split(' ')[1]:l));return}if(/ 1$/.test(l)){if(mc++%monthStep===0){
+    svg.appendChild(sv('line',{x1:X(i),x2:X(i),y1:m.t+ph,y2:m.t+ph+5,stroke:'var(--median)'}));
+    svg.appendChild(sv('text',{x:X(i)+3,y:H-8,'text-anchor':'start'},l.split(' ')[0]));
+  }}});
+  function path(arr,upto){var d='',pen=false;for(var i=st;i<=upto&&i<arr.length;i++){var v=arr[i];if(v==null){pen=false;continue}d+=(pen?'L':'M')+X(i).toFixed(1)+','+Y(v).toFixed(1);pen=true}return d}
+  var styles={median:{stroke:'var(--median)','stroke-width':2,'stroke-dasharray':'5 4',fill:'none'},y2223:{stroke:'var(--violet)','stroke-width':2,fill:'none'},this:{stroke:'var(--accent)','stroke-width':3,fill:'none','stroke-linecap':'round','stroke-linejoin':'round'}};
+  keys.forEach(function(k){var a={};for(var q in styles[k])a[q]=styles[k][q];a.d=path(ser[k],end);svg.appendChild(sv('path',a))});
+  if(fc){var up='',dn='',mid='',n=fc.p50.length;
+    for(var k=0;k<n;k++){var i=f0+k;if(fc.p90[k]==null||i>end)continue;up+=(up?'L':'M')+X(i).toFixed(1)+','+Y(fc.p90[k]).toFixed(1);mid+=(mid?'L':'M')+X(i).toFixed(1)+','+Y(fc.p50[k]).toFixed(1)}
+    for(var k2=n-1;k2>=0;k2--){var i2=f0+k2;if(fc.p10[k2]==null||i2>end)continue;dn+='L'+X(i2).toFixed(1)+','+Y(fc.p10[k2]).toFixed(1)}
+    if(up){svg.appendChild(sv('path',{d:up+dn+'Z',fill:'var(--accent)','fill-opacity':.18,stroke:'none'}));
+      svg.appendChild(sv('path',{d:mid,fill:'none',stroke:'var(--accent)','stroke-width':2.5,'stroke-dasharray':'2 4','stroke-linecap':'round'}));}
+  }
+  var ti=s.day_index, tv=ser.this[ti];
+  if(ti<=end&&tv!=null){
+    svg.appendChild(sv('line',{x1:X(ti),x2:X(ti),y1:m.t,y2:m.t+ph,stroke:'var(--line)','stroke-width':1.5}));
+    svg.appendChild(sv('circle',{cx:X(ti),cy:Y(tv),r:5,fill:'var(--accent)',stroke:'var(--card)','stroke-width':2}));
+  }
+  var lab=[],peakLabels=[];
+  function endPt(k,lbl,col){var arr=ser[k],i=Math.min(end,arr.length-1);while(i>0&&arr[i]==null)i--;
+    var pk=st;for(var j=st;j<=i;j++)if(arr[j]!=null&&arr[j]>(arr[pk]||0))pk=j;
+    if(k!=='this'&&arr[i]<0.5*arr[pk]){peakLabels.push(sv('text',{x:X(pk),y:Y(arr[pk])-9,'text-anchor':'middle','font-weight':'700',class:'halo',style:'fill:'+col},lbl+' peak '+arr[pk]+'″'));return}
+    lab.push({y:Y(arr[i]),x:X(i),t:lbl,v:arr[i],c:col,k:k})}
+  endPt('this',mobile?'Now':'This season','var(--accent-ink)');endPt('y2223','2022–23','var(--violet)');endPt('median','Normal','var(--text2)');
+  var edge=lab.filter(function(L){return !(L.k==='this'&&L.x<m.l+pw-60)}).sort(function(a,b){return a.y-b.y});
+  for(var e=1;e<edge.length;e++)if(edge[e].y-edge[e-1].y<30)edge[e].y=edge[e-1].y+30;
+  peakLabels.forEach(function(t){svg.appendChild(t)});
+  lab.forEach(function(L){
+    if(L.k==='this'&&L.x<m.l+pw-60){
+      var txt=L.t+' '+L.v+'″',tw=txt.length*7.6,left=L.x-8-tw>=m.l+4;
+      svg.appendChild(sv('text',{x:left?L.x-8:L.x+8,y:Y(L.v)-12,'text-anchor':left?'end':'start','font-weight':'700',class:'halo',style:'fill:'+L.c},txt));
+      if(fc&&zoom==='near'){var ke=fc.p50.length-1;while(ke>0&&fc.p50[ke]==null)ke--;var ie=f0+ke;if(ie<=end&&ke>0){svg.appendChild(sv('text',mobile?{x:X(ie),y:Y(fc.p90[ke])-8,'text-anchor':'end','font-weight':'700',class:'halo',style:'fill:'+L.c}:{x:X(ie)+6,y:Y(fc.p50[ke])+4,'font-weight':'700',class:'halo',style:'fill:'+L.c},labels[ie]+': ~'+fc.p50[ke]+'″'))}}
+      return;
+    }
+    var lx=m.l+pw+6;
+    svg.appendChild(sv('text',{x:lx,y:L.y-1,'font-weight':'700',style:'fill:'+L.c},L.t));
+    svg.appendChild(sv('text',{x:lx,y:L.y+14,style:'fill:var(--text2)'},L.v+'″'));
+  });
+  var cross=sv('line',{y1:m.t,y2:m.t+ph,stroke:'var(--text2)','stroke-width':1,opacity:0});svg.appendChild(cross);
+  var dots=keys.map(function(k){var c=sv('circle',{r:4,fill:k==='this'?'var(--accent)':(k==='median'?'var(--median)':'var(--violet)'),stroke:'var(--card)','stroke-width':2,opacity:0});svg.appendChild(c);return c});
+  var ov=sv('rect',{x:m.l,y:m.t,width:pw,height:ph,fill:'transparent',style:'cursor:crosshair'});svg.appendChild(ov);
+  function at(ev){
+    var r=svg.getBoundingClientRect(),px=(ev.clientX-r.left)*(W/r.width),i=st+Math.round((px-m.l)/pw*(end-st));i=Math.max(st,Math.min(end,i));
+    cross.setAttribute('x1',X(i));cross.setAttribute('x2',X(i));cross.setAttribute('opacity',.5);
+    var L=[{t:labels[i]}],nm={this:'This season',median:'Normal',y2223:'2022–23'},col={this:cssv('--accent'),median:cssv('--median'),y2223:cssv('--violet')};
+    ['this','median','y2223'].forEach(function(k){var v=ser[k][i];var d=dots[keys.indexOf(k)];if(v==null){d.setAttribute('opacity',0);return}d.setAttribute('cx',X(i));d.setAttribute('cy',Y(v));d.setAttribute('opacity',1);L.push({t:nm[k]+': '+v+'″',sw:col[k],dash:k==='median'})});
+    if(fc){var kk=i-f0;if(kk>0&&kk<fc.p50.length&&fc.p50[kk]!=null)L.splice(1,0,{t:'Forecast: '+fc.p50[kk]+'″ (range '+fc.p10[kk]+'–'+fc.p90[kk]+'″)',sw:col.this,dash:true});}
+    showTip(L,r.left+X(i)*(r.width/W),r.top+Y(Math.max(ser.median[i]||0,ser.this[i]||0,ser.y2223[i]||0))*(r.height/H),svg);
+  }
+  function off(){cross.setAttribute('opacity',0);dots.forEach(function(d){d.setAttribute('opacity',0)});hideTip()}
+  ov.addEventListener('pointermove',at);ov.addEventListener('pointerdown',at);
+  ov.addEventListener('pointerleave',function(ev){if(ev.pointerType==='mouse')off()});
+  box.appendChild(svg);
+}
+function niceStep(v){var p=Math.pow(10,Math.floor(Math.log10(v))),n=v/p;return (n<=1?1:n<=2?2:n<=2.5?2.5:n<=5?5:10)*p}
+function niceTicks(mx){var st=niceStep(mx/5),out=[];for(var v=0;v<=mx+1e-9;v+=st)out.push(+v.toFixed(st<1?1:0));return out}
+
+/* resize / theme */
+var lastW=window.innerWidth,rt=null;
+window.addEventListener('resize',function(){if(!D)return;clearTimeout(rt);rt=setTimeout(function(){if(Math.abs(window.innerWidth-lastW)<2)return;lastW=window.innerWidth;hideTip();drawStorm(F());renderSeasonChart()},120)});
+var mq=matchMedia('(prefers-color-scheme: dark)');
+if(mq.addEventListener)mq.addEventListener('change',function(){if(D){drawStorm(F());renderSeasonChart()}});
+
+load();
+})();
+</script>
+</body>
+</html>
