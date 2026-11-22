@@ -2,8 +2,9 @@ name: Refresh forecast data
 
 on:
   schedule:
-    # 12:45 and 21:45 UTC = 5:45 am and 2:45 pm MST (6:45 am / 3:45 pm during daylight time)
-    - cron: '45 12,21 * * *'
+    # Every 3 hours at :23 past (UTC). GitHub sometimes skips scheduled runs,
+    # so frequent runs keep the data at most a few hours old if one is dropped.
+    - cron: '23 */3 * * *'
   workflow_dispatch:
 
 permissions:
