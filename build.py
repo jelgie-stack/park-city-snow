@@ -24,12 +24,15 @@ S = requests.Session()
 
 
 def get(url, **kw):
-    for _ in range(4):
+    import time
+    for i in range(5):
         try:
             r = S.get(url, timeout=120, **kw)
             if r.ok: return r
-        except Exception:
-            pass
+            print(f'fetch {url} -> HTTP {r.status_code}: {r.text[:200]}', file=sys.stderr)
+        except Exception as e:
+            print(f'fetch {url} -> {e}', file=sys.stderr)
+        time.sleep(5 * 2 ** i)  # back off: 5, 10, 20, 40, 80 s
     raise RuntimeError('fetch failed: ' + url)
 
 
@@ -287,6 +290,76 @@ def weekly_outlook(today, med):
     return weeks
 
 
+def previous_snapshot(now, min_hours=20, fallback_hours=6):
+    """Earlier data.json from git history: the newest one at least min_hours old,
+    else the oldest one at least fallback_hours old. Returns (data, hours_old) or (None, None)."""
+    import subprocess
+    here = os.path.dirname(os.path.abspath(__file__))
+    try:
+        shas = subprocess.run(['git', '-C', here, 'log', '--format=%H', '-n', '60', '--', 'data.json'],
+                              capture_output=True, text=True, timeout=30).stdout.split()
+    except Exception:
+        return None, None
+    snaps = []
+    for sha in shas:
+        try:
+            txt = subprocess.run(['git', '-C', here, 'show', f'{sha}:data.json'], capture_output=True, text=True, timeout=30).stdout
+            d = json.loads(txt)
+            age = (now - pd.Timestamp(d['updated'])).total_seconds() / 3600
+            snaps.append((age, d))
+        except Exception:
+            continue
+    old = [x for x in snaps if x[0] >= min_hours]
+    if old:
+        return min(old, key=lambda x: x[0])[1], min(old, key=lambda x: x[0])[0]
+    fb = [x for x in snaps if x[0] >= fallback_hours]
+    if fb:
+        return max(fb, key=lambda x: x[0])[1], max(fb, key=lambda x: x[0])[0]
+    return None, None
+
+
+def direction(now_v, then_v, abs_th, rel_th=0.15):
+    d = now_v - then_v
+    if abs(d) < max(abs_th, rel_th * max(abs(then_v), 1e-9)):
+        return 'steady'
+    return 'up' if d > 0 else 'down'
+
+
+def add_trends(data, now):
+    prev, hours = previous_snapshot(now)
+    if not prev:
+        return
+    since = dict(label=prev.get('updated_label', ''), hours=round(hours))
+    for site, f in data['forecast'].items():
+        pf = prev.get('forecast', {}).get(site)
+        if not pf: continue
+        pd_ = {d['iso']: d for d in pf.get('days', [])}
+        days, tn, tt = {}, 0.0, 0.0
+        for d in f['days']:
+            o = pd_.get(d['iso'])
+            if not o: continue
+            days[d['iso']] = dict(dp1=d['p']['1'] - o['p']['1'], dmean=round(d['mean'] - o['mean'], 1))
+            tn += d['mean']; tt += o['mean']
+        if not days: continue
+        sd = f.get('storm', {}).get('day')
+        storm = None
+        if sd in pd_:
+            nd = next(x for x in f['days'] if x['iso'] == sd)
+            storm = dict(day=sd, p1_now=nd['p']['1'], p1_then=pd_[sd]['p']['1'])
+        f['trend'] = dict(since, days=days, n_days=len(days), total_now=round(tn, 1), total_then=round(tt, 1),
+                          dir=direction(tn, tt, 1.0), storm=storm)
+    pw = prev.get('longrange', {}).get('weeks') or []
+    weeks = []
+    for i, w in enumerate(data['longrange'].get('weeks', [])):
+        if i < len(pw) and w.get('p_above') is not None and pw[i].get('p_above') is not None:
+            weeks.append(dict(week=w['week'], d_above=w['p_above'] - pw[i]['p_above'],
+                              dir=direction(w['p_above'], pw[i]['p_above'], 10, 0)))
+        else:
+            weeks.append(None)
+    if any(weeks):
+        data['longrange']['trend'] = dict(since, weeks=weeks)
+
+
 def main():
     now = pd.Timestamp.now(tz=TZ)
     today = now.date()
@@ -307,6 +380,10 @@ def main():
     except Exception as e:
         print('cpc failed', e); cpc = []
     data['longrange'] = dict(weeks=data['season'].pop('weeks'), cpc=cpc)
+    try:
+        add_trends(data, now)
+    except Exception as e:
+        print('trend failed', e)
     with open(os.path.join(OUT, 'data.json'), 'w') as f:
         json.dump(data, f, separators=(',', ':'))
     print('wrote', os.path.join(OUT, 'data.json'), 'storm day', sd, 'summit total', fc['summit']['total'])

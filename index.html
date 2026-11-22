@@ -72,6 +72,14 @@ h3.h3:first-child{margin-top:4px}
 .tot .tv{font-size:30px;font-weight:750;line-height:1.05;letter-spacing:-.02em}
 .tot.sel .tv{color:var(--accent-ink)}
 .tot .tr{font-size:13px;color:var(--text2)}
+.tot .tt{font-size:13px;font-weight:600;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tot .tt.up{color:var(--accent-ink)}.tot .tt.down{color:var(--warm)}
+.sc .bx{position:relative}
+.sc .bx .ar{position:absolute;top:1px;right:2px;font-size:10px;line-height:1;font-weight:800}
+.sc .bx .ar.up{color:var(--accent-ink)}.sc .bx .ar.down{color:var(--warm)}
+.wkrow .wd{display:block;font-size:12px;font-weight:700;text-align:right;margin-top:2px}
+.wkrow .wd.up{color:var(--accent-ink)}.wkrow .wd.down{color:var(--warm)}.wkrow .wd.steady{color:var(--muted);font-weight:600}
+.trendnote{font-size:13px;color:var(--muted);margin:6px 0 0}
 .stripcap{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin:14px 0 6px;font-size:13px;color:var(--text2)}
 .stripcap b{color:var(--text);font-size:14px}
 .days10{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:3px}
@@ -661,6 +669,7 @@ function miniBars(vals,max,hi,ref){
 function setViz(id,node){var b=$('vz-'+id);clear(b);b.appendChild(node)}
 
 /* ---------- render ---------- */
+function sinceShort(t){return t&&t.label?t.label.replace(/ MT$/,'').replace(/^(\w{3}) \w{3} \d+, /,'$1 ').replace(':00',''):'earlier'}
 function renderAll(){addExplain();
   syncSeg('siteSeg',site);
   $('updated').textContent='Updated '+D.updated_label;var ur=$('updRef');if(ur)ur.textContent='Last: '+D.updated_label+'.';
@@ -690,6 +699,9 @@ function renderGlance(f){
     var k=el('div','tk');k.appendChild(el('span',null,s==='summit'?'Summit':'Town'));k.appendChild(el('em',null,s==='summit'?'9,715 ft':'7,000 ft'));d.appendChild(k);
     d.appendChild(el('div','tv',t.p50+'″'));
     d.appendChild(el('div','tr','likely '+t.p10+'–'+t.p90+'″'));
+    var tr=D.forecast[s].trend;
+    if(tr){var dd=Math.round((tr.total_now-tr.total_then)*10)/10;
+      d.appendChild(el('div','tt '+tr.dir,(tr.dir==='up'?'↑ wetter':tr.dir==='down'?'↓ drier':'→ steady')+(tr.dir==='steady'?'':' ('+(dd>0?'+':'')+dd+'″)')+' vs '+sinceShort(tr)));}
     d.setAttribute('aria-label',(s==='summit'?'Summit':'Town')+': most likely '+t.p50+' inches over 10 days, likely range '+t.p10+' to '+t.p90);
     tb.appendChild(d);
   });
@@ -707,11 +719,16 @@ function renderGlance(f){
   f.days.forEach(function(d,i){
     var c=el('div','sc'+(i===st.si?' pk':''));
     c.appendChild(el('span','dw',d.dow));c.appendChild(el('span','dd',String(d.dom)));
-    var bxe=el('div','bx v'+chanceLevel(d.p['1']),String(d.p['1']));bxe.appendChild(el('span','pc','%'));c.appendChild(bxe);
+    var bxe=el('div','bx v'+chanceLevel(d.p['1']),String(d.p['1']));bxe.appendChild(el('span','pc','%'));
+    var tdd=f.trend&&f.trend.days&&f.trend.days[d.iso];
+    if(tdd&&Math.abs(tdd.dp1)>=10){var ar=el('span','ar '+(tdd.dp1>0?'up':'down'),tdd.dp1>0?'↑':'↓');ar.setAttribute('aria-hidden','true');bxe.appendChild(ar);bxe.title=(tdd.dp1>0?'Up ':'Down ')+Math.abs(tdd.dp1)+' points vs '+sinceShort(f.trend);}
+    c.appendChild(bxe);
     var a=d.p50>=0.5;c.appendChild(el('span','am',a?inchN(d.p50):'\u00a0'));
     g.appendChild(c);
   });
   box.appendChild(g);
+  var tn=$('stripTrend');if(!tn){tn=el('p','trendnote');tn.id='stripTrend';box.parentNode.appendChild(tn)}
+  tn.textContent=f.trend?('↑↓ = chance moved 10+ points since '+sinceShort(f.trend)+'.'):'';
   if(st.inWindow){var br=el('div','brk'),sp=el('span',null,st.kind==='a storm'?'storm':'snow');sp.style.gridColumn=(st.a+1)+' / '+(st.b+2);br.appendChild(sp);box.appendChild(br)}
   box.setAttribute('aria-label','Chance of 1 inch or more each day at '+siteLong()+': '+f.days.map(function(d){return d.dow+' '+d.dom+' '+d.p['1']+'%'+(d.p50>=0.5?', typical '+inch(d.p50):'')}).join('; '));
 }
@@ -934,11 +951,14 @@ function renderLong(){
     mid.appendChild(bar);
     var ws=el('div','ws',fmtW(w.p50)+' vs '+fmtW(w.normal)+' normal');ws.appendChild(el('span','wsx',' (≈'+Math.round(w.p50*12)+'″ snow)'));mid.appendChild(ws);
     r.appendChild(mid);
-    r.appendChild(el('div','wp'+(w.p_above>=55?' hi':w.p_above!=null&&w.p_above<25?' lo':''),w.p_above==null?'–':(w.p_above+'%')));
+    var wpe=el('div','wp'+(w.p_above>=55?' hi':w.p_above!=null&&w.p_above<25?' lo':''),w.p_above==null?'–':(w.p_above+'%'));
+    var lt=L.trend&&L.trend.weeks&&L.trend.weeks[w.week-1];
+    if(lt){wpe.appendChild(el('span','wd '+lt.dir,(lt.dir==='up'?'↑ ':lt.dir==='down'?'↓ ':'→ ')+(lt.d_above>0?'+':'')+lt.d_above))}
+    r.appendChild(wpe);
     box.appendChild(r);
   });
   var sc=$('wscale');clear(sc);sc.appendChild(el('span'));var sd=el('div');sd.appendChild(el('span',null,'0″'));sd.appendChild(el('span',null,mx+'″ water'));sc.appendChild(sd);sc.appendChild(el('span'));
-  $('wkNote').textContent='Dark tick = middle forecast; shaded = 1-in-10 low to 1-in-10 high; black line = a normal week (1991–2020). Beyond about two weeks these odds are only slightly better than chance.';
+  $('wkNote').textContent=(L.trend?'Arrows: change in the chance since '+sinceShort(L.trend)+'. ':'')+'Dark tick = middle forecast; shaded = 1-in-10 low to 1-in-10 high; black line = a normal week (1991–2020). Beyond about two weeks these odds are only slightly better than chance.';
   var cb=$('cpc');clear(cb);
   var band=function(p){var b=[33,40,50,60,70,80,90,100];for(var i=0;i<b.length-1;i++)if(p>=b[i]&&p<b[i+1])return b[i]+'–'+b[i+1]+'%';return p+'%'};
   var short={'Wetter than normal':'Wetter','Drier than normal':'Drier','Warmer than normal':'Warmer','Colder than normal':'Colder','Near normal':'Near normal','No tilt (equal chances)':'No tilt'};
