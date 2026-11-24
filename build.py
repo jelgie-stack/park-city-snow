@@ -290,7 +290,7 @@ def weekly_outlook(today, med):
     return weeks
 
 
-def previous_snapshot(now, min_hours=20, fallback_hours=6):
+def previous_snapshot(now, min_hours=18, fallback_hours=6):
     """Earlier data.json from git history: the newest one at least min_hours old,
     else the oldest one at least fallback_hours old. Returns (data, hours_old) or (None, None)."""
     import subprocess
