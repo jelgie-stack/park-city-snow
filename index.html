@@ -670,7 +670,7 @@ function miniBars(vals,max,hi,ref){
 function setViz(id,node){var b=$('vz-'+id);clear(b);b.appendChild(node)}
 
 /* ---------- render ---------- */
-function sinceAgo(t){if(!t||t.hours==null)return 'earlier';var h=t.hours;return h<36?'yesterday':Math.round(h/24)+' days ago'}
+function sinceAgo(t){if(!t||t.hours==null)return 'earlier';var d=Math.max(1,Math.round(t.hours/24));return d===1?'a day ago':d+' days ago'}
 function sinceShort(t){return t&&t.label?t.label.replace(/ MT$/,'').replace(/^(\w{3}) \w{3} \d+, /,'$1 ').replace(':00',''):'earlier'}
 function renderAll(){addExplain();
   syncSeg('siteSeg',site);
